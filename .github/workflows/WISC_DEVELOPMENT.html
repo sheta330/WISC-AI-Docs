@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - Development Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(138, 43, 226, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #8a2be2;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #8a2be2;
+            border-color: #8a2be2;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #8a2be2;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #8a2be2;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .function {
+            color: #d2a8ff;
+        }
+
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #8a2be2;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: #8a2be2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .step-content p {
+            color: #a0a0a0;
+            margin-bottom: 10px;
+        }
+
+        .file-tree {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .file-tree .folder {
+            color: #ffd700;
+        }
+
+        .file-tree .file {
+            color: #a0a0a0;
+        }
+
+        .file-tree .new-file {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+
+        .file-tree .indent {
+            margin-left: 20px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(138, 43, 226, 0.05));
+            border: 2px solid #8a2be2;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .info-box h4 {
+            color: #8a2be2;
+            margin-bottom: 15px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(233, 69, 96, 0.05));
+            border: 2px solid #e94560;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .warning-box h4 {
+            color: #e94560;
+            margin-bottom: 15px;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.05));
+            border: 2px solid #00d4aa;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .success-box h4 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: #8a2be2;
+        }
+
+        .checklist li.checked::before {
+            content: '☑';
+            color: #00d4aa;
+        }
+
+        .command-block {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #8a2be2;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #8a2be2;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .extension-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .extension-table th {
+            background: rgba(138, 43, 226, 0.3);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .extension-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .extension-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+
+        .tag-green {
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+        }
+
+        .tag-red {
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+
+        .tag-yellow {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+
+            .step-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💻 Development Guide</h1>
+            <p class="subtitle">
+                Comprehensive Guide for Developers<br>
+                Step-by-Step Development Guide
+            </p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DECORATORS.html" class="nav-link">🎨 Decorator Pattern</a>
+            <a href="WISC_DEVELOPMENT.html" class="nav-link active">💻 Development Guide</a>
+            <a href="WISC_API.html" class="nav-link">🔌 API Reference</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <section class="section">
+            <h2>🚀 Quick Start - Developing a New Feature</h2>
+
+            <div class="step-container">
+                <div class="step-item">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <h4>Understand the Required Feature</h4>
+                        <p>Determine: Is it a Decorator? Handler? Provider? Tool?</p>
+                        <p><span class="tag tag-green">Safe</span> New Decorator | <span class="tag tag-yellow">Careful</span> New Endpoint</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <h4>Feature Flag</h4>
+                        <p>Add flag in appsettings.json before any code</p>
+                        <div class="code-block" style="margin-top: 10px;">
+<span class="string">"FeatureFlags:EnableMyFeature"</span>: <span class="keyword">false</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <h4>The Implementation</h4>
+                        <p>Create the required Class/Interface</p>
+                        <p>If Decorator: Must implement ISmartQueryServiceV2</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-icon">4</div>
+                    <div class="step-content">
+                        <h4>Registration</h4>
+                        <p>Register in Program.cs - place in correct stack position</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-icon">5</div>
+                    <div class="step-content">
+                        <h4>Testing</h4>
+                        <p>Unit tests + Integration tests</p>
+                        <p>Ensure Core is not affected (Backward compatibility)</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-icon">6</div>
+                    <div class="step-content">
+                        <h4>Toggle On</h4>
+                        <p>Change flag to true in production</p>
+                        <div class="code-block" style="margin-top: 10px;">
+<span class="string">"FeatureFlags:EnableMyFeature"</span>: <span class="keyword">true</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Extension Points - Where to Develop?</h2>
+
+            <table class="extension-table">
+                <thead>
+                    <tr>
+                        <th>If you want...</th>
+                        <th>Create...</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>To add behavior on Query</td>
+                        <td>Decorator</td>
+                        <td>New QueryService</td>
+                        <td><span class="tag tag-green">Safe</span></td>
+                    </tr>
+                    <tr>
+                        <td>New Endpoint</td>
+                        <td>Controller Action</td>
+                        <td>UnifiedSmartQueryController</td>
+                        <td><span class="tag tag-green">Safe</span></td>
+                    </tr>
+                    <tr>
+                        <td>New Tool</td>
+                        <td>Tool Class</td>
+                        <td>WiscToolRegistry</td>
+                        <td><span class="tag tag-green">Safe</span></td>
+                    </tr>
+                    <tr>
+                        <td>New Intent Handler</td>
+                        <td>IntentHandler</td>
+                        <td>Handlers folder</td>
+                        <td><span class="tag tag-green">Safe</span></td>
+                    </tr>
+                    <tr>
+                        <td>New Provider</td>
+                        <td>Provider</td>
+                        <td>WISC.AI.Mind.Providers</td>
+                        <td><span class="tag tag-green">Safe</span></td>
+                    </tr>
+                    <tr>
+                        <td>To modify SQL generation</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td><span class="tag tag-red">Forbidden</span></td>
+                    </tr>
+                    <tr>
+                        <td>To modify Domain Entities</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td><span class="tag tag-red">Forbidden</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>📁 Project Structure</h2>
+
+            <div class="file-tree">
+<span class="folder">WISC/</span>
+<span class="indent">
+<span class="folder">WISC.API/</span>
+<span class="indent">
+<span class="folder">Controllers/</span>
+<span class="indent">
+<span class="file">UnifiedSmartQueryController.cs</span> ← <span class="new-file">New Endpoints here</span>
+<span class="file">AiChatController.cs</span>
+</span>
+<span class="folder">Program.cs</span> ← <span class="new-file">Register Decorators here</span>
+</span>
+<span class="folder">WISC.AI.Mind/</span>
+<span class="indent">
+<span class="folder">Services/</span>
+<span class="indent">
+<span class="file">PersonaEnhancedQueryService.cs</span> ← <span class="new-file">Decorators here</span>
+<span class="file">SecureSmartQueryService.cs</span>
+<span class="file">SmartQueryServiceV2.cs</span> ← <span class="tag tag-red">FROZEN - DON'T TOUCH</span>
+</span>
+<span class="folder">Handlers/</span>
+<span class="indent">
+<span class="file">*IntentHandler.cs</span> ← <span class="new-file">New Handlers here</span>
+</span>
+<span class="folder">Providers/</span>
+<span class="indent">
+<span class="file">*Provider.cs</span> ← <span class="new-file">New Providers here</span>
+</span>
+</span>
+<span class="folder">WISC.Domain/</span> ← <span class="tag tag-red">FROZEN - NEVER MODIFY</span>
+</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>✅ Pre-Development Checklist</h2>
+
+            <div class="info-box">
+                <h4>Before starting development</h4>
+                <ul class="checklist">
+                    <li>Determine feature type (Decorator/Handler/Provider/Tool)</li>
+                    <li>Create Feature Flag in appsettings.json</li>
+                    <li>Ensure Core won't be affected (SmartQueryServiceV2)</li>
+                    <li>Plan Tests (Unit + Integration)</li>
+                    <li>Ensure Backward Compatibility</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📝 Practical Example: Batch Query Feature</h2>
+
+            <h3>Scenario</h3>
+            <p>User wants to ask 3 questions at once instead of one by one</p>
+
+            <h3>Step 1: Feature Flag</h3>
+            <div class="code-block">
+<span class="comment">// appsettings.json</span>
+{
+  <span class="string">"FeatureFlags:EnableBatchQueries"</span>: <span class="keyword">false</span>
+}
+            </div>
+
+            <h3>Step 2: New Decorator</h3>
+            <div class="code-block">
+<span class="comment">// WISC.AI.Mind/Services/BatchQueryService.cs</span>
+<span class="keyword">public class</span> <span class="class">BatchQueryService</span> : <span class="class">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">private readonly</span> <span class="class">ISmartQueryServiceV2</span> _inner;
+    <span class="keyword">private readonly</span> <span class="class">IConfiguration</span> _config;
+
+    <span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// Check if batch mode</span>
+        <span class="keyword">if</span> (!<span class="function">IsBatchRequest</span>(request))
+            <span class="keyword">return await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+
+        <span class="comment">// NEW BEHAVIOR: Parallel execution</span>
+        <span class="keyword">var</span> queries = <span class="function">ExtractQueries</span>(request);
+        <span class="keyword">var</span> tasks = queries.<span class="function">Select</span>(q =&gt; <span class="function">ExecuteSingleAsync</span>(q));
+        <span class="keyword">var</span> results = <span class="keyword">await</span> <span class="class">Task</span>.<span class="function">WhenAll</span>(tasks);
+
+        <span class="keyword">return</span> <span class="function">MergeResults</span>(results);
+    }
+}
+            </div>
+
+            <h3>Step 3: New Endpoint</h3>
+            <div class="code-block">
+<span class="comment">// UnifiedSmartQueryController.cs</span>
+[<span class="function">HttpPost</span>(<span class="string">"batch"</span>)]
+[<span class="function">ProducesResponseType</span>(<span class="keyword">typeof</span>(<span class="class">BatchQueryResponse</span>))]
+<span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">ActionResult</span>&gt; <span class="function">BatchQueryAsync</span>(
+    [<span class="function">FromBody</span>] <span class="class">BatchQueryRequest</span> request)
+{
+    <span class="comment">// Validate batch size limit</span>
+    <span class="comment">// Execute through service stack</span>
+    <span class="comment">// Return aggregated results</span>
+}
+            </div>
+
+            <h3>Step 4: Registration</h3>
+            <div class="code-block">
+<span class="comment">// Program.cs - Add to decorator stack</span>
+builder.Services.<span class="function">AddScoped</span>&lt;<span class="class">ISmartQueryServiceV2</span>&gt;(sp =&gt;
+{
+    <span class="keyword">var</span> innerService = sp.<span class="function">GetRequiredService</span>&lt;<span class="class">SmartQueryServiceV2</span>&gt;();
+    <span class="keyword">var</span> securityWrapped = <span class="keyword">new</span> <span class="class">SecureSmartQueryService</span>(innerService, ...);
+    <span class="keyword">var</span> personaWrapped = <span class="keyword">new</span> <span class="class">PersonaEnhancedQueryService</span>(securityWrapped, ...);
+    
+    <span class="comment">// NEW: Add Batch decorator (outermost)</span>
+    <span class="keyword">return new</span> <span class="class">BatchQueryService</span>(personaWrapped, config);
+});
+            </div>
+
+            <h3>Step 5: Test</h3>
+            <div class="code-block">
+[<span class="function">Fact</span>]
+<span class="keyword">public async</span> <span class="function">Task</span> <span class="function">BatchQuery_ExecutesMultipleQueries</span>()
+{
+    <span class="comment">// Arrange</span>
+    <span class="keyword">var</span> request = <span class="keyword">new</span> <span class="class">BatchQueryRequest</span> {
+        Queries = <span class="keyword">new</span>[] { <span class="string">"Show Ahmed's balance"</span>, <span class="string">"Get today's transactions"</span> }
+    };
+
+    <span class="comment">// Act</span>
+    <span class="keyword">var</span> result = <span class="keyword">await</span> _controller.<span class="function">BatchQueryAsync</span>(request);
+
+    <span class="comment">// Assert</span>
+    <span class="function">Assert</span>.<span class="function">Equal</span>(2, result.Results.Count);
+}
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚠️ Do's and Don'ts</h2>
+
+            <div class="success-box">
+                <h4>✅ DO's</h4>
+                <ul>
+                    <li>✅ Use Feature Flags for every new feature</li>
+                    <li>✅ Create Decorators instead of modifying Core</li>
+                    <li>✅ Write Tests before Implementation (TDD)</li>
+                    <li>✅ Maintain Backward Compatibility</li>
+                    <li>✅ Register Decorators in correct order</li>
+                    <li>✅ Document the Feature in WISC_DOCS</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>❌ DON'Ts</h4>
+                <ul>
+                    <li>❌ Touch SmartQueryServiceV2.ExecuteAsync</li>
+                    <li>❌ Modify Domain Entities</li>
+                    <li>❌ Add Cloud APIs (Offline policy)</li>
+                    <li>❌ Forget the Feature Flag</li>
+                    <li>❌ Create Breaking Changes</li>
+                    <li>❌ Add Decorators without registration</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>� Feature Flags Configuration</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">
+                Feature Flags provide granular control over system behavior. All flags are defined in <code>appsettings.json</code> 
+                and checked at runtime by the respective services.
+            </p>
+
+            <div class="step-item">
+                <div class="step-icon">⚙️</div>
+                <div class="step-content">
+                    <h4>appsettings.json Location</h4>
+                    <p>WISC/WISC.API/appsettings.json</p>
+                </div>
+            </div>
+
+            <h3>Current Feature Flags</h3>
+            <div class="code-block">
+{
+  <span class="string">"FeatureFlags"</span>: {
+    <span class="comment">// === AI & LLM Features ===</span>
+    <span class="string">"EnableOllamaLocal"</span>: <span class="keyword">true</span>,           <span class="comment">// Use local Ollama (strict offline mode)</span>
+    <span class="string">"EnableVoiceProcessing"</span>: <span class="keyword">false</span>,        <span class="comment">// Speech-to-text for Egyptian Arabic</span>
+    <span class="string">"EnableSmartTagPromptInjection"</span>: <span class="keyword">true</span>, <span class="comment">// Inject smart tags into LLM prompts</span>
+    <span class="string">"EnableSmartTagValidation"</span>: <span class="keyword">true</span>,      <span class="comment">// Validate SQL against smart tags</span>
+    <span class="string">"EnableSmartTagTelemetry"</span>: <span class="keyword">true</span>,      <span class="comment">// Log smart tag usage metrics</span>
+    <span class="string">"SmartTagTokenBudget"</span>: <span class="number">300</span>,            <span class="comment">// Max tokens for smart tag context</span>
+    
+    <span class="comment">// === Persona & UX Features ===</span>
+    <span class="string">"Features:PersonaResponses"</span>: <span class="keyword">true</span>,       <span class="comment">// Enable Arabic persona formatting</span>
+    <span class="string">"EnableThoughtStream"</span>: <span class="keyword">true</span>,          <span class="comment">// SignalR real-time thought streaming</span>
+    
+    <span class="comment">// === Security Features ===</span>
+    <span class="string">"EnableCrossTenantValidation"</span>: <span class="keyword">true</span>,    <span class="comment">// Strict tenant isolation checks</span>
+    <span class="string">"EnableSqlInjectionGuards"</span>: <span class="keyword">true</span>,     <span class="comment">// Block dangerous SQL keywords</span>
+    <span class="string">"EnableBusinessRuleValidation"</span>: <span class="keyword">true</span>,  <span class="comment">// Validate against business rules</span>
+    
+    <span class="comment">// === Development & Debug ===</span>
+    <span class="string">"DebugMode"</span>: <span class="keyword">false</span>,                  <span class="comment">// Enable verbose logging</span>
+    <span class="string">"EnableQueryPreview"</span>: <span class="keyword">true</span>,           <span class="comment">// Show SQL before execution</span>
+    <span class="string">"EnableDetailedErrorMessages"</span>: <span class="keyword">false</span>,    <span class="comment">// Include stack traces in errors (dev only)</span>
+    <span class="string">"EnableMockLlmResponses"</span>: <span class="keyword">false</span>        <span class="comment">// Use mock LLM for testing (no Ollama needed)</span>
+  }
+}
+            </div>
+
+            <h3>Usage in Code</h3>
+            <div class="code-block">
+<span class="comment">// Check feature flag in service</span>
+<span class="keyword">public class</span> <span class="class">PersonaEnhancedQueryService</span> : <span class="class">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">private readonly</span> <span class="class">IConfiguration</span> _config;
+    
+    <span class="keyword">public async</span> <span class="class">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// Check if feature is enabled</span>
+        <span class="keyword">var</span> enablePersona = _config.<span class="function">GetValue</span>&lt;<span class="keyword">bool</span>&gt;(<span class="string">"Features:PersonaResponses"</span>);
+        
+        <span class="keyword">if</span> (!enablePersona)
+        {
+            <span class="comment">// Skip persona formatting, return raw response</span>
+            <span class="keyword">return await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+        }
+        
+        <span class="comment">// Apply persona enhancement</span>
+        <span class="keyword">var</span> result = <span class="keyword">await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+        result.Message = <span class="function">FormatInPersona</span>(result.Message);
+        <span class="keyword">return</span> result;
+    }
+}
+            </div>
+
+            <div class="info-box">
+                <h4>🎯 Best Practices</h4>
+                <ul class="checklist">
+                    <li>Always set new flags to <code>false</code> by default</li>
+                    <li>Use feature flags for any new functionality</li>
+                    <li>Test with flag off before enabling in production</li>
+                    <li>Document flag purpose in code comments</li>
+                    <li>Remove obsolete flags after feature is stable</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>�🔧 Development Commands</h2>
+
+            <div class="command-block">
+                <span class="comment">// Run the API locally</span><br>
+                dotnet run --project WISC/WISC.API
+            </div>
+
+            <div class="command-block">
+                <span class="comment">// Run tests</span><br>
+                dotnet test WISC/WISC.Tests
+            </div>
+
+            <div class="command-block">
+                <span class="comment">// Check build</span><br>
+                dotnet build WISC/WISC.sln
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>WISC AI Documentation | Development Guide (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture Deep Dive</a>
+                <a href="WISC_DECORATORS.html">🎨 Decorator Pattern</a>
+                <a href="WISC_API.html">🔌 API Reference</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

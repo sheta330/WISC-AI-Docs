@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - Database Schema & Data Dictionary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(0, 150, 255, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #0096ff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 150, 255, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #0096ff;
+            border-color: #0096ff;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #0096ff;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #0096ff;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .table-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 150, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .table-title {
+            font-size: 1.4em;
+            color: #0096ff;
+            font-weight: bold;
+        }
+
+        .table-description {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .schema-table th {
+            background: rgba(0, 150, 255, 0.3);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .schema-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .schema-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .pk {
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .fk {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+
+        .idx {
+            color: #ffc107;
+        }
+
+        .type-string {
+            color: #a5d6ff;
+        }
+
+        .type-int {
+            color: #79c0ff;
+        }
+
+        .type-decimal {
+            color: #ffa657;
+        }
+
+        .type-datetime {
+            color: #d2a8ff;
+        }
+
+        .type-guid {
+            color: #8a2be2;
+        }
+
+        .type-bool {
+            color: #00d4aa;
+        }
+
+        .relations-box {
+            background: rgba(0, 150, 255, 0.1);
+            border-left: 4px solid #0096ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .relations-box h4 {
+            color: #0096ff;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .smart-tag {
+            display: inline-block;
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-family: 'Courier New', monospace;
+            margin: 2px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #0096ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+
+            .schema-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🗄️ Database Schema</h1>
+            <p class="subtitle">
+                Data Dictionary & Entity Relationships<br>
+                For CommandGenerator SQL Accuracy
+            </p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DATABASE.html" class="nav-link active">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <!-- Overview -->
+        <section class="section">
+            <h2>📊 Schema Overview</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">
+                This data dictionary provides the complete schema for the WISC AI system. 
+                The <strong>CommandGenerator</strong> uses these exact table/column names to generate accurate SQL queries.
+            </p>
+
+            <div class="code-block">
+<span class="comment">-- Smart Tags Used by CommandGenerator</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> Customers           <span class="comment">-- [T:Customers] [Role:Master]</span>
+<span class="keyword">SELECT</span> Balance <span class="keyword">FROM</span> Accounts        <span class="comment">-- [C:Balance] [Role:Key]</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> Transactions         <span class="comment">-- [T:Transactions] [Role:Transaction]</span>
+            </div>
+        </section>
+
+        <!-- Core Tables -->
+        <section class="section">
+            <h2>🏛️ Core Business Tables</h2>
+
+            <!-- Customers Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">👤</div>
+                    <div class="table-title">Customers</div>
+                </div>
+                <p class="table-description">
+                    Master data for customers/debtors. Core entity for balance inquiries and transaction tracking.
+                    <br>
+                    <span class="smart-tag">[T:Customers]</span>
+                    <span class="smart-tag">[Role:Master]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">CustomerId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK, Clustered</td>
+                            <td>Primary key - System GUID</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Tenants, Indexed</td>
+                            <td>Multi-tenancy isolation key</td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td class="type-string">NVARCHAR(200)</td>
+                            <td>NOT NULL, Indexed</td>
+                            <td>Customer full name (Arabic supported)</td>
+                        </tr>
+                        <tr>
+                            <td>Code</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>Unique per tenant</td>
+                            <td>Business reference code</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td class="type-string">NVARCHAR(20)</td>
+                            <td>Nullable</td>
+                            <td>Primary contact number</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td class="type-string">NVARCHAR(100)</td>
+                            <td>Nullable</td>
+                            <td>Email address</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td class="type-string">NVARCHAR(500)</td>
+                            <td>Nullable</td>
+                            <td>Physical address</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Soft delete flag</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedAt</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>DEFAULT GETDATE()</td>
+                            <td>Record creation timestamp</td>
+                        </tr>
+                        <tr>
+                            <td>Balance</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>Computed/Trigger</td>
+                            <td>Current balance (debt/credit)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="relations-box">
+                    <h4>🔗 Relationships</h4>
+                    <ul style="color: #a0a0a0; padding-left: 20px;">
+                        <li>One-to-Many: <strong>Customers → Transactions</strong> (CustomerId)</li>
+                        <li>One-to-Many: <strong>Customers → Debts</strong> (CustomerId)</li>
+                        <li>Many-to-One: <strong>Customers → Tenants</strong> (TenantId)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Accounts Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">📒</div>
+                    <div class="table-title">Accounts (Chart of Accounts)</div>
+                </div>
+                <p class="table-description">
+                    Chart of Accounts - Financial accounts for double-entry bookkeeping.
+                    <br>
+                    <span class="smart-tag">[T:Accounts]</span>
+                    <span class="smart-tag">[Role:Master]</span>
+                    <span class="smart-tag">[C:AccountType]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">AccountId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK, Indexed</td>
+                            <td>Tenant isolation</td>
+                        </tr>
+                        <tr>
+                            <td>AccountCode</td>
+                            <td class="type-string">NVARCHAR(20)</td>
+                            <td>NOT NULL, Unique</td>
+                            <td>Account number (e.g., 1100, 2100)</td>
+                        </tr>
+                        <tr>
+                            <td>AccountName</td>
+                            <td class="type-string">NVARCHAR(200)</td>
+                            <td>NOT NULL</td>
+                            <td>Account name (Arabic/English)</td>
+                        </tr>
+                        <tr>
+                            <td>AccountType</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>NOT NULL</td>
+                            <td>Asset, Liability, Equity, Revenue, Expense</td>
+                        </tr>
+                        <tr>
+                            <td>ParentAccountId</td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Accounts, Nullable</td>
+                            <td>Parent account for hierarchy</td>
+                        </tr>
+                        <tr>
+                            <td>Balance</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Current account balance</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Active status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">💰</div>
+                    <div class="table-title">Transactions</div>
+                </div>
+                <p class="table-description">
+                    All financial transactions - the core transaction log. Supports both simple and double-entry.
+                    <br>
+                    <span class="smart-tag">[T:Transactions]</span>
+                    <span class="smart-tag">[Role:Transaction]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">TransactionId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK, Indexed</td>
+                            <td>Tenant isolation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">CustomerId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Customers, Indexed</td>
+                            <td>Related customer (nullable for internal)</td>
+                        </tr>
+                        <tr>
+                            <td>TransactionDate</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>NOT NULL, Indexed</td>
+                            <td>Transaction timestamp</td>
+                        </tr>
+                        <tr>
+                            <td>TransactionType</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>NOT NULL</td>
+                            <td>Invoice, Payment, Expense, Transfer, etc.</td>
+                        </tr>
+                        <tr>
+                            <td>ReferenceNumber</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>Nullable</td>
+                            <td>Invoice number, Receipt number, etc.</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td class="type-string">NVARCHAR(500)</td>
+                            <td>Nullable</td>
+                            <td>Transaction description</td>
+                        </tr>
+                        <tr>
+                            <td>Amount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>NOT NULL</td>
+                            <td>Transaction amount (positive = debit, negative = credit)</td>
+                        </tr>
+                        <tr>
+                            <td>Currency</td>
+                            <td class="type-string">NVARCHAR(3)</td>
+                            <td>DEFAULT 'EGP'</td>
+                            <td>ISO currency code (EGP, USD, EUR)</td>
+                        </tr>
+                        <tr>
+                            <td>ExchangeRate</td>
+                            <td class="type-decimal">DECIMAL(18,6)</td>
+                            <td>DEFAULT 1</td>
+                            <td>Rate to base currency</td>
+                        </tr>
+                        <tr>
+                            <td>IsReversed</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 0</td>
+                            <td>Soft delete - reversed transaction</td>
+                        </tr>
+                        <tr>
+                            <td>ReversedByTransactionId</td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Transactions, Nullable</td>
+                            <td>Link to reversing transaction</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedBy</td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Users</td>
+                            <td>User who created</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedAt</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>DEFAULT GETDATE()</td>
+                            <td>Creation timestamp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TransactionDetails Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">📋</div>
+                    <div class="table-title">TransactionDetails (Double-Entry Lines)</div>
+                </div>
+                <p class="table-description">
+                    Double-entry bookkeeping lines. Each Transaction has 2+ lines (Debit and Credit must balance).
+                    <br>
+                    <span class="smart-tag">[T:TransactionDetails]</span>
+                    <span class="smart-tag">[Role:Transaction]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">TransactionDetailId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">TransactionId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Transactions, Indexed</td>
+                            <td>Parent transaction</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">AccountId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Accounts</td>
+                            <td>Chart of Accounts entry</td>
+                        </tr>
+                        <tr>
+                            <td>DebitAmount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Debit amount (0 if credit line)</td>
+                        </tr>
+                        <tr>
+                            <td>CreditAmount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Credit amount (0 if debit line)</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td class="type-string">NVARCHAR(255)</td>
+                            <td>Nullable</td>
+                            <td>Line description</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="relations-box">
+                    <h4>🔗 Double-Entry Rule</h4>
+                    <p style="color: #a0a0a0;">
+                        For each Transaction: <strong>SUM(DebitAmount) = SUM(CreditAmount)</strong><br>
+                        This is enforced by database trigger or application logic.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supporting Tables -->
+        <section class="section">
+            <h2>📦 Supporting Tables</h2>
+
+            <!-- Categories Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">🏷️</div>
+                    <div class="table-title">Categories</div>
+                </div>
+                <p class="table-description">
+                    Categorization for products, expenses, and income types.
+                    <br>
+                    <span class="smart-tag">[T:Categories]</span>
+                    <span class="smart-tag">[Role:Reference]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">CategoryId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK, Indexed</td>
+                            <td>Tenant isolation</td>
+                        </tr>
+                        <tr>
+                            <td>CategoryName</td>
+                            <td class="type-string">NVARCHAR(100)</td>
+                            <td>NOT NULL</td>
+                            <td>Category name</td>
+                        </tr>
+                        <tr>
+                            <td>CategoryType</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>NOT NULL</td>
+                            <td>Product, Expense, Income, Asset</td>
+                        </tr>
+                        <tr>
+                            <td>ParentCategoryId</td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Categories, Nullable</td>
+                            <td>Parent category for hierarchy</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Active status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">📦</div>
+                    <div class="table-title">Products</div>
+                </div>
+                <p class="table-description">
+                    Product/Services catalog with pricing.
+                    <br>
+                    <span class="smart-tag">[T:Products]</span>
+                    <span class="smart-tag">[Role:Master]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">ProductId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK, Indexed</td>
+                            <td>Tenant isolation</td>
+                        </tr>
+                        <tr>
+                            <td>ProductCode</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>Unique</td>
+                            <td>SKU or product code</td>
+                        </tr>
+                        <tr>
+                            <td>ProductName</td>
+                            <td class="type-string">NVARCHAR(200)</td>
+                            <td>NOT NULL</td>
+                            <td>Product name</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">CategoryId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Categories</td>
+                            <td>Product category</td>
+                        </tr>
+                        <tr>
+                            <td>UnitPrice</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Default selling price</td>
+                        </tr>
+                        <tr>
+                            <td>CostPrice</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Cost of goods</td>
+                        </tr>
+                        <tr>
+                            <td>StockQuantity</td>
+                            <td class="type-int">INT</td>
+                            <td>DEFAULT 0</td>
+                            <td>Current stock level</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Active status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Debts Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">📊</div>
+                    <div class="table-title">Debts (Guarantees)</div>
+                </div>
+                <p class="table-description">
+                    Customer debt/guarantee records. Separate from Transactions for quick balance lookups.
+                    <br>
+                    <span class="smart-tag">[T:Debts]</span>
+                    <span class="smart-tag">[Role:Transaction]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">DebtId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="idx">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK, Indexed</td>
+                            <td>Tenant isolation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">CustomerId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Customers, Indexed</td>
+                            <td>Debtor customer</td>
+                        </tr>
+                        <tr>
+                            <td>DebtDate</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>NOT NULL</td>
+                            <td>Date of debt record</td>
+                        </tr>
+                        <tr>
+                            <td>OriginalAmount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>NOT NULL</td>
+                            <td>Original debt amount</td>
+                        </tr>
+                        <tr>
+                            <td>PaidAmount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>DEFAULT 0</td>
+                            <td>Amount paid so far</td>
+                        </tr>
+                        <tr>
+                            <td>RemainingAmount</td>
+                            <td class="type-decimal">DECIMAL(18,2)</td>
+                            <td>Computed</td>
+                            <td>Original - Paid</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td class="type-string">NVARCHAR(20)</td>
+                            <td>DEFAULT 'Active'</td>
+                            <td>Active, Paid, Overdue, Cancelled</td>
+                        </tr>
+                        <tr>
+                            <td>DueDate</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>Nullable</td>
+                            <td>Expected payment date</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td class="type-string">NVARCHAR(500)</td>
+                            <td>Nullable</td>
+                            <td>Debt description</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- System Tables -->
+        <section class="section">
+            <h2>⚙️ System Tables</h2>
+
+            <!-- Tenants Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">🏢</div>
+                    <div class="table-title">Tenants (Multi-tenancy)</div>
+                </div>
+                <p class="table-description">
+                    Multi-tenancy root table. Every business entity belongs to a tenant.
+                    <br>
+                    <span class="smart-tag">[T:Tenants]</span>
+                    <span class="smart-tag">[Role:System]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key - isolated tenant boundary</td>
+                        </tr>
+                        <tr>
+                            <td>TenantName</td>
+                            <td class="type-string">NVARCHAR(200)</td>
+                            <td>NOT NULL</td>
+                            <td>Company/Organization name</td>
+                        </tr>
+                        <tr>
+                            <td>DatabaseName</td>
+                            <td class="type-string">NVARCHAR(100)</td>
+                            <td>Nullable</td>
+                            <td>Isolated DB name (if sharding)</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Subscription status</td>
+                        </tr>
+                        <tr>
+                            <td>CreatedAt</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>DEFAULT GETDATE()</td>
+                            <td>Registration date</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-icon">👤</div>
+                    <div class="table-title">Users</div>
+                </div>
+                <p class="table-description">
+                    System users with authentication. Linked to Tenants for multi-tenant access.
+                    <br>
+                    <span class="smart-tag">[T:Users]</span>
+                    <span class="smart-tag">[Role:System]</span>
+                </p>
+                
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Constraints</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pk">UserId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>PK</td>
+                            <td>Primary key</td>
+                        </tr>
+                        <tr>
+                            <td><span class="fk">TenantId</span></td>
+                            <td class="type-guid">UNIQUEIDENTIFIER</td>
+                            <td>FK → Tenants, Indexed</td>
+                            <td>User's tenant</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td class="type-string">NVARCHAR(100)</td>
+                            <td>NOT NULL, Unique</td>
+                            <td>Login email</td>
+                        </tr>
+                        <tr>
+                            <td>PasswordHash</td>
+                            <td class="type-string">NVARCHAR(255)</td>
+                            <td>NOT NULL</td>
+                            <td>Hashed password</td>
+                        </tr>
+                        <tr>
+                            <td>FullName</td>
+                            <td class="type-string">NVARCHAR(200)</td>
+                            <td>NOT NULL</td>
+                            <td>Display name</td>
+                        </tr>
+                        <tr>
+                            <td>Role</td>
+                            <td class="type-string">NVARCHAR(50)</td>
+                            <td>DEFAULT 'User'</td>
+                            <td>Admin, Accountant, Viewer</td>
+                        </tr>
+                        <tr>
+                            <td>IsActive</td>
+                            <td class="type-bool">BIT</td>
+                            <td>DEFAULT 1</td>
+                            <td>Account status</td>
+                        </tr>
+                        <tr>
+                            <td>LastLoginAt</td>
+                            <td class="type-datetime">DATETIME2</td>
+                            <td>Nullable</td>
+                            <td>Last successful login</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Smart Tags Reference -->
+        <section class="section">
+            <h2>🏷️ Smart Tags Reference</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">
+                Smart Tags are metadata annotations that help the <strong>CommandGenerator</strong> understand table/column purposes.
+            </p>
+
+            <div class="table-card">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Tag Pattern</th>
+                            <th>Meaning</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>[T:TableName]</code></td>
+                            <td>Table identifier</td>
+                            <td><span class="smart-tag">[T:Customers]</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>[C:ColumnName]</code></td>
+                            <td>Column identifier</td>
+                            <td><span class="smart-tag">[C:Balance]</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>[Role:Master]</code></td>
+                            <td>Master data table (rarely changes)</td>
+                            <td>Customers, Accounts, Products</td>
+                        </tr>
+                        <tr>
+                            <td><code>[Role:Transaction]</code></td>
+                            <td>Transaction table (frequent inserts)</td>
+                            <td>Transactions, Debts</td>
+                        </tr>
+                        <tr>
+                            <td><code>[Role:Reference]</code></td>
+                            <td>Lookup/reference data</td>
+                            <td>Categories</td>
+                        </tr>
+                        <tr>
+                            <td><code>[Role:Key]</code></td>
+                            <td>Key column for entity resolution</td>
+                            <td>Name, Code, Phone</td>
+                        </tr>
+                        <tr>
+                            <td><code>[Role:View]</code></td>
+                            <td>Read-only column (no UPDATE)</td>
+                            <td>Balance (computed)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+<span class="comment">-- Example: How CommandGenerator uses Smart Tags</span>
+<span class="comment">-- User Query: "هاتلي فلوس أحمد" (Show Ahmed's balance)</span>
+
+<span class="comment">-- 1. Entity Resolution finds: [T:Customers] + [C:Name] [Role:Key]</span>
+<span class="comment">-- 2. Field Resolution finds: [T:Customers] + [C:Balance] [Role:View]</span>
+<span class="comment">-- 3. Generated SQL:</span>
+
+<span class="keyword">SELECT</span> Name, Balance 
+<span class="keyword">FROM</span> Customers 
+<span class="keyword">WHERE</span> Name <span class="keyword">LIKE</span> <span class="string">'%Ahmed%'</span> 
+<span class="keyword">AND</span> TenantId = <span class="string">'current-tenant-guid'</span>;
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>WISC AI Documentation | Database Schema & Data Dictionary (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture</a>
+                <a href="WISC_CONTRACTS.html">📋 JSON Contracts</a>
+                <a href="WISC_SIGNALR.html">📡 SignalR Stream</a>
+                <a href="WISC_BUSINESS_RULES.html">⚖️ Business Rules</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
