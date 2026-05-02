@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - Business Rules & Trust Layer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(233, 69, 96, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #e94560;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .trust-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #e94560;
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #e94560;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #e94560;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .rule-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 1px solid rgba(233, 69, 96, 0.2);
+        }
+
+        .rule-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rule-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(233, 69, 96, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .rule-title {
+            font-size: 1.4em;
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .rule-category {
+            display: inline-block;
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .rule-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rule-list li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .rule-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00d4aa;
+            font-weight: bold;
+            width: 25px;
+            height: 25px;
+            background: rgba(0, 212, 170, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rule-list li:last-child {
+            border-bottom: none;
+        }
+
+        .violation-example {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid #e94560;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .violation-example h5 {
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .severity-high {
+            border-left: 4px solid #e94560;
+        }
+
+        .severity-medium {
+            border-left: 4px solid #ffc107;
+        }
+
+        .severity-low {
+            border-left: 4px solid #00d4aa;
+        }
+
+        .implementation-box {
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 4px solid #00d4aa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .implementation-box h4 {
+            color: #00d4aa;
+            margin-bottom: 10px;
+        }
+
+        .trust-layer-diagram {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .layer-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .layer-item::after {
+            content: '↓';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #a0a0a0;
+            font-size: 1.2em;
+        }
+
+        .layer-item:last-child::after {
+            display: none;
+        }
+
+        .layer-number {
+            width: 40px;
+            height: 40px;
+            background: #e94560;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .layer-content h4 {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .layer-content p {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⚖️ Business Rules & Trust Layer</h1>
+            <p class="subtitle">
+                Accounting Constraints & Security Registry<br>
+                For SecurityDecorator Implementation
+            </p>
+            <div class="trust-badge">🔒 TRUST LAYER (In Development)</div>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link active">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <!-- Trust Layer Overview -->
+        <section class="section">
+            <h2>🛡️ Trust Layer Architecture</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">
+                The Trust Layer validates all operations against business rules BEFORE database execution. 
+                Violations are rejected at the <strong>SecureSmartQueryService</strong> decorator level.
+            </p>
+
+            <div class="trust-layer-diagram">
+                <div class="layer-flow">
+                    <div class="layer-item">
+                        <div class="layer-number">1</div>
+                        <div class="layer-content">
+                            <h4>SQL Generation</h4>
+                            <p>CommandGenerator produces SQL from natural language</p>
+                        </div>
+                    </div>
+
+                    <div class="layer-item">
+                        <div class="layer-number">2</div>
+                        <div class="layer-content">
+                            <h4>Trust Layer Validation</h4>
+                            <p>SecureSmartQueryService validates against Business Rules Registry</p>
+                        </div>
+                    </div>
+
+                    <div class="layer-item">
+                        <div class="layer-number">3</div>
+                        <div class="layer-content">
+                            <h4>Decision</h4>
+                            <p>✓ ALLOW → Execute SQL | ✗ DENY → Return SecurityError</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financial Integrity Rules -->
+        <section class="section">
+            <h2>💰 Financial Integrity Rules</h2>
+
+            <div class="rule-card severity-high">
+                <div class="rule-header">
+                    <div class="rule-icon">💵</div>
+                    <div class="rule-title">Balance Constraints</div>
+                </div>
+                <div class="rule-category">HIGH SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>NO_OVERDRAFT:</strong> Cannot withdraw/transfer amount greater than available balance</li>
+                    <li><strong>POSITIVE_AMOUNT:</strong> All transaction amounts must be positive numbers (sign determined by transaction type)</li>
+                    <li><strong>CURRENCY_MATCH:</strong> Multi-currency operations must specify exchange rate</li>
+                    <li><strong>PRECISION_LIMIT:</strong> Decimal precision limited to 2 places for display, 6 for exchange rates</li>
+                </ul>
+
+                <div class="violation-example">
+                    <h5>🚫 Violation Example</h5>
+                    <p style="color: #a0a0a0;">User Query: "Withdraw 20,000 from Ahmed" (Balance: 15,000)</p>
+                    <div class="code-block">
+<span class="comment">// Trust Layer blocks this query</span>
+{
+  <span class="string">"errorCode"</span>: <span class="string">"InsufficientBalance"</span>,
+  <span class="string">"errorMessage"</span>: <span class="string">"Withdrawal amount exceeds available balance. Max allowed: 15,000 EGP"</span>,
+  <span class="string">"errorType"</span>: <span class="string">"BusinessRuleViolation"</span>
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="rule-card severity-high">
+                <div class="rule-header">
+                    <div class="rule-icon">📊</div>
+                    <div class="rule-title">Double-Entry Accounting</div>
+                </div>
+                <div class="rule-category">HIGH SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>DEBIT_EQUALS_CREDIT:</strong> Total debits must equal total credits in every transaction</li>
+                    <li><strong>CHART_OF_ACCOUNTS:</strong> All entries must reference valid Chart of Accounts codes</li>
+                    <li><strong>NO_ORPHAN_ENTRIES:</strong> Every transaction detail must belong to a parent transaction</li>
+                    <li><strong>PERIOD_VALIDITY:</strong> Cannot post to closed accounting periods</li>
+                </ul>
+
+                <div class="implementation-box">
+                    <h4>🔧 Implementation Note</h4>
+                    <p style="color: #a0a0a0;">
+                        Enforced via database trigger OR application validation in <code>SecureSmartQueryService</code>.
+                        Recommendation: Database-level constraint for absolute integrity.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Integrity Rules -->
+        <section class="section">
+            <h2>🗄️ Data Integrity Rules</h2>
+
+            <div class="rule-card severity-high">
+                <div class="rule-header">
+                    <div class="rule-icon">🏢</div>
+                    <div class="rule-title">Tenant Isolation</div>
+                </div>
+                <div class="rule-category">CRITICAL SECURITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>TENANT_BOUNDARY:</strong> Every query MUST include TenantId filter</li>
+                    <li><strong>NO_CROSS_TENANT:</strong> Cannot JOIN tables across different tenants</li>
+                    <li><strong>TENANT_SUBQUERY:</strong> Subqueries must maintain tenant scope</li>
+                    <li><strong>SESSION_VALIDATION:</strong> Session must belong to authenticated tenant</li>
+                </ul>
+
+                <div class="code-block">
+<span class="comment">// SQL Injection Check Example</span>
+<span class="comment">// Query MUST have: WHERE TenantId = @tenantId</span>
+
+<span class="keyword">if</span> (!sql.Contains(<span class="string">"TenantId"</span>))
+{
+    <span class="keyword">throw new</span> SecurityException(<span class="string">"CrossTenantViolation: Missing tenant filter"</span>);
+}
+
+<span class="comment">// Parameterized tenant injection</span>
+cmd.Parameters.AddWithValue(<span class="string">"@tenantId"</span>, currentUser.TenantId);
+                </div>
+            </div>
+
+            <div class="rule-card severity-medium">
+                <div class="rule-header">
+                    <div class="rule-icon">📝</div>
+                    <div class="rule-title">Immutable Records</div>
+                </div>
+                <div class="rule-category">MEDIUM SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>NO_HARD_DELETE:</strong> Financial records cannot be deleted (soft delete only)</li>
+                    <li><strong>REVERSE_TRANSACTION:</strong> Corrections must use reversing entries</li>
+                    <li><strong>AUDIT_TRAIL:</strong> All changes require user attribution and timestamp</li>
+                    <li><strong>ARCHIVE_BEFORE_DELETE:</strong> Records must be archived before soft delete</li>
+                </ul>
+
+                <div class="violation-example">
+                    <h5>🚫 Blocked Operations</h5>
+                    <ul style="color: #a0a0a0; padding-left: 20px;">
+                        <li>DELETE FROM Transactions (❌ BLOCKED)</li>
+                        <li>UPDATE TransactionDate to past date (❌ BLOCKED if period closed)</li>
+                        <li>Direct balance modification (❌ MUST use transactions)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Operational Rules -->
+        <section class="section">
+            <h2>⚙️ Operational Rules</h2>
+
+            <div class="rule-card severity-medium">
+                <div class="rule-header">
+                    <div class="rule-icon">📅</div>
+                    <div class="rule-title">Date & Period Rules</div>
+                </div>
+                <div class="rule-category">MEDIUM SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>FUTURE_DATE_LIMIT:</strong> Cannot post transactions more than 30 days in future</li>
+                    <li><strong>CLOSED_PERIOD:</strong> Cannot modify transactions in closed accounting periods</li>
+                    <li><strong>DATE_SEQUENCE:</strong> Transaction date cannot be before customer creation date</li>
+                    <li><strong>YEAR_BOUNDARY:</strong> Cross-year adjustments require special authorization</li>
+                </ul>
+            </div>
+
+            <div class="rule-card severity-low">
+                <div class="rule-header">
+                    <div class="rule-icon">📦</div>
+                    <div class="rule-title">Inventory & Stock</div>
+                </div>
+                <div class="rule-category">LOW SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>NEGATIVE_STOCK:</strong> Can allow negative stock for backorders (configurable)</li>
+                    <li><strong>STOCK_RESERVATION:</strong> Reserved stock cannot exceed available quantity</li>
+                    <li><strong>COST_VALIDATION:</strong> Unit price cannot be below cost price (configurable)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- AI-Specific Security Rules -->
+        <section class="section">
+            <h2>🤖 AI Security Rules</h2>
+
+            <div class="rule-card severity-high">
+                <div class="rule-header">
+                    <div class="rule-icon">🤖</div>
+                    <div class="rule-title">SQL Generation Guards</div>
+                </div>
+                <div class="rule-category">CRITICAL SECURITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>NO_DROP_TABLE:</strong> AI cannot generate DROP, TRUNCATE, or ALTER statements</li>
+                    <li><strong>NO_GRANT:</strong> AI cannot generate GRANT, REVOKE permission statements</li>
+                    <li><strong>READ_ONLY_COLUMNS:</strong> AI cannot UPDATE computed columns (Balance, etc.)</li>
+                    <li><strong>PARAMETERIZED_ONLY:</strong> All user input must be SQL parameterized</li>
+                    <li><strong>TIMEOUT_LIMIT:</strong> AI queries limited to 30 seconds execution</li>
+                </ul>
+
+                <div class="code-block">
+<span class="comment">// SQL Validation in SecureSmartQueryService</span>
+<span class="keyword">private readonly</span> <span class="keyword">string</span>[] _forbiddenKeywords = <span class="keyword">new</span>[]
+{
+    <span class="string">"DROP"</span>, <span class="string">"TRUNCATE"</span>, <span class="string">"ALTER"</span>, <span class="string">"GRANT"</span>, <span class="string">"REVOKE"</span>,
+    <span class="string">"CREATE"</span>, <span class="string">"DELETE"</span>  <span class="comment">// DELETE requires soft-delete logic</span>
+};
+
+<span class="keyword">public</span> <span class="keyword">void</span> ValidateSql(<span class="keyword">string</span> sql)
+{
+    <span class="keyword">var</span> upperSql = sql.ToUpperInvariant();
+    
+    <span class="keyword">foreach</span> (<span class="keyword">var</span> keyword <span class="keyword">in</span> _forbiddenKeywords)
+    {
+        <span class="keyword">if</span> (upperSql.Contains(keyword))
+            <span class="keyword">throw new</span> SecurityException(<span class="string">$"Forbidden SQL keyword detected: {keyword}"</span>);
+    }
+}
+                </div>
+            </div>
+
+            <div class="rule-card severity-high">
+                <div class="rule-header">
+                    <div class="rule-icon">🔍</div>
+                    <div class="rule-title">Smart Tag Validation</div>
+                </div>
+                <div class="rule-category">HIGH SEVERITY</div>
+
+                <ul class="rule-list">
+                    <li><strong>ROLE_VIEW_ONLY:</strong> Columns with [Role:View] cannot be in UPDATE statements</li>
+                    <li><strong>TABLE_WHITELIST:</strong> AI can only query whitelisted tables</li>
+                    <li><strong>COLUMN_WHITELIST:</strong> Sensitive columns (PasswordHash, etc.) are blacklisted</li>
+                </ul>
+
+                <div class="implementation-box">
+                    <h4>🔧 Smart Tag Security Example</h4>
+                    <div class="code-block">
+<span class="comment">// Balance column has [Role:View] tag</span>
+<span class="comment">// This UPDATE would be rejected:</span>
+<span class="comment">// UPDATE Customers SET Balance = 10000 WHERE...</span>
+
+<span class="keyword">if</span> (sql.Contains(<span class="string">"UPDATE"</span>) && sql.Contains(<span class="string">"Balance"</span>))
+{
+    <span class="keyword">var</span> columnRole = GetColumnRole(<span class="string">"Customers"</span>, <span class="string">"Balance"</span>);  <span class="comment">// Returns: View</span>
+    
+    <span class="keyword">if</span> (columnRole == ColumnRole.View)
+        <span class="keyword">throw new</span> SecurityException(<span class="string">"Cannot UPDATE computed column: Balance"</span>);
+}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Guide -->
+        <section class="section">
+            <h2>🔧 Implementation Guide</h2>
+
+            <div class="rule-card">
+                <div class="rule-header">
+                    <div class="rule-icon">💻</div>
+                    <div class="rule-title">SecureSmartQueryService Integration</div>
+                </div>
+
+                <div class="code-block">
+<span class="comment">// WISC.AI.Mind/Services/SecureSmartQueryService.cs</span>
+
+<span class="keyword">public class</span> SecureSmartQueryService : ISmartQueryServiceV2
+{
+    <span class="keyword">private readonly</span> ISmartQueryServiceV2 _inner;
+    <span class="keyword">private readonly</span> IBusinessRuleValidator _ruleValidator;
+    
+    <span class="keyword">public async</span> Task&lt;SmartQueryResponseV2&gt; ExecuteAsync(
+        SmartQueryRequestV2 request, 
+        CancellationToken ct)
+    {
+        <span class="comment">// 1. Get generated SQL from inner service (preview mode)</span>
+        <span class="keyword">var</span> preview = <span class="keyword">await</span> _inner.PreviewAsync(request, ct);
+        <span class="keyword">var</span> sql = preview.GeneratedSql;
+        
+        <span class="comment">// 2. TRUST LAYER: Validate against Business Rules</span>
+        <span class="keyword">var</span> validation = <span class="keyword">await</span> _ruleValidator.ValidateAsync(sql, request.TenantId);
+        
+        <span class="keyword">if</span> (!validation.IsValid)
+        {
+            <span class="keyword">return new</span> SmartQueryResponseV2
+            {
+                Success = <span class="keyword">false</span>,
+                ErrorCode = validation.ViolatedRule,
+                ErrorMessage = validation.ErrorMessage,
+                ErrorType = <span class="string">"BusinessRuleViolation"</span>
+            };
+        }
+        
+        <span class="comment">// 3. All rules passed - execute actual query</span>
+        <span class="keyword">return await</span> _inner.ExecuteAsync(request, ct);
+    }
+}
+                </div>
+
+                <div class="implementation-box">
+                    <h4>📋 Rule Validation Interface</h4>
+                    <div class="code-block">
+<span class="keyword">public interface</span> IBusinessRuleValidator
+{
+    Task&lt;RuleValidationResult&gt; ValidateAsync(
+        <span class="keyword">string</span> sql, 
+        Guid tenantId);
+}
+
+<span class="keyword">public class</span> RuleValidationResult
+{
+    <span class="keyword">public bool</span> IsValid { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public string</span> ViolatedRule { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public string</span> ErrorMessage { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rule Registry Summary -->
+        <section class="section">
+            <h2>📋 Rule Registry Summary</h2>
+
+            <div class="rule-card">
+                <table style="width: 100%; border-collapse: collapse; color: #a0a0a0;">
+                    <thead>
+                        <tr style="background: rgba(233, 69, 96, 0.2);">
+                            <th style="padding: 12px; text-align: left; color: white;">Rule ID</th>
+                            <th style="padding: 12px; text-align: left; color: white;">Category</th>
+                            <th style="padding: 12px; text-align: left; color: white;">Severity</th>
+                            <th style="padding: 12px; text-align: left; color: white;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">NO_OVERDRAFT</td>
+                            <td style="padding: 12px;">Financial</td>
+                            <td style="padding: 12px; color: #e94560;">HIGH</td>
+                            <td style="padding: 12px; color: #00d4aa;">✓ Implemented</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">DEBIT_EQUALS_CREDIT</td>
+                            <td style="padding: 12px;">Accounting</td>
+                            <td style="padding: 12px; color: #e94560;">HIGH</td>
+                            <td style="padding: 12px; color: #00d4aa;">✓ Implemented</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">TENANT_BOUNDARY</td>
+                            <td style="padding: 12px;">Security</td>
+                            <td style="padding: 12px; color: #e94560;">CRITICAL</td>
+                            <td style="padding: 12px; color: #00d4aa;">✓ Implemented</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">NO_HARD_DELETE</td>
+                            <td style="padding: 12px;">Data Integrity</td>
+                            <td style="padding: 12px; color: #ffc107;">MEDIUM</td>
+                            <td style="padding: 12px; color: #00d4aa;">✓ Implemented</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">NO_DROP_TABLE</td>
+                            <td style="padding: 12px;">AI Security</td>
+                            <td style="padding: 12px; color: #e94560;">CRITICAL</td>
+                            <td style="padding: 12px; color: #00d4aa;">✓ Implemented</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <td style="padding: 12px;">ROLE_VIEW_ONLY</td>
+                            <td style="padding: 12px;">Smart Tags</td>
+                            <td style="padding: 12px; color: #e94560;">HIGH</td>
+                            <td style="padding: 12px; color: #ffc107;">⏳ Planned</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px;">CLOSED_PERIOD</td>
+                            <td style="padding: 12px;">Operational</td>
+                            <td style="padding: 12px; color: #ffc107;">MEDIUM</td>
+                            <td style="padding: 12px; color: #ffc107;">⏳ Planned</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>WISC AI Documentation | Business Rules & Trust Layer Registry (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture</a>
+                <a href="WISC_DATABASE.html">🗄️ Database Schema</a>
+                <a href="WISC_CONTRACTS.html">📋 JSON Contracts</a>
+                <a href="WISC_SIGNALR.html">📡 SignalR Stream</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

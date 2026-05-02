@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - Decorator Pattern</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(255, 193, 7, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #ffc107;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 193, 7, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #ffc107;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #ffc107;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .visual-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .decorator-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .decorator-layer {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .decorator-layer:hover {
+            transform: scale(1.02);
+        }
+
+        .layer-outer {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.4), rgba(233, 69, 96, 0.1));
+            border: 2px solid #e94560;
+        }
+
+        .layer-middle {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.4), rgba(0, 212, 170, 0.1));
+            border: 2px solid #00d4aa;
+        }
+
+        .layer-core {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 193, 7, 0.1));
+            border: 2px solid #ffc107;
+        }
+
+        .layer-arrow {
+            color: #a0a0a0;
+            font-size: 1.5em;
+        }
+
+        .decorator-layer h4 {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+
+        .decorator-layer p {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .function {
+            color: #d2a8ff;
+        }
+
+        .code-block .class {
+            color: #ffa657;
+        }
+
+        .code-block .interface {
+            color: #79c0ff;
+        }
+
+        .principle-box {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.05));
+            border: 2px solid #ffc107;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .principle-box h4 {
+            color: #ffc107;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .step-card h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #ffc107;
+            color: #1a1a2e;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 193, 7, 0.3);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .highlight-text {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(233, 69, 96, 0.05));
+            border: 2px solid #e94560;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .warning-box h4 {
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎨 Decorator Pattern</h1>
+            <p class="subtitle">
+                Understanding the Decorator Pattern and how we add features without touching Core<br>
+                The Secret Sauce of Additive Architecture
+            </p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DECORATORS.html" class="nav-link active">🎨 Decorator Pattern</a>
+            <a href="WISC_DEVELOPMENT.html" class="nav-link">💻 Development Guide</a>
+            <a href="WISC_API.html" class="nav-link">🔌 API Reference</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <section class="section">
+            <h2>🎯 What is the Decorator Pattern?</h2>
+            
+            <div class="principle-box">
+                <h4>Simple Definition</h4>
+                <p style="font-size: 1.1em;">
+                    <span class="highlight-text">Decorator Pattern</span> = You wrap an object inside another object,
+                    and the outer adds new behavior without modifying the inner.
+                </p>
+            </div>
+
+            <h3>Practical Example: Onion Layers 🧅</h3>
+            <div class="visual-box">
+                <div class="decorator-visual">
+                    <div class="decorator-layer layer-outer">
+                        <h4>🎭 Layer 3: PersonaEnhancedQueryService</h4>
+                        <p>Adds Arabic formatting to the response</p>
+                    </div>
+                    <div class="layer-arrow">↓ wrap</div>
+                    
+                    <div class="decorator-layer layer-middle">
+                        <h4>🔒 Layer 2: SecureSmartQueryService</h4>
+                        <p>Adds Security validation (cross-tenant)</p>
+                    </div>
+                    <div class="layer-arrow">↓ wrap</div>
+                    
+                    <div class="decorator-layer layer-core">
+                        <h4>⚙️ Layer 1: SmartQueryServiceV2 (Core)</h4>
+                        <p>Core logic - Frozen and untouched 🔒</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📐 Structure in Code</h2>
+
+            <h3>Step 1: Interface (Contract)</h3>
+            <div class="code-block">
+<span class="comment">// The contract all Decorators must implement</span>
+<span class="keyword">public interface</span> <span class="interface">ISmartQueryServiceV2</span>
+{
+    <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(
+        <span class="class">SmartQueryRequestV2</span> request, 
+        <span class="class">CancellationToken</span> ct);
+}
+            </div>
+
+            <h3>Step 2: Core Implementation (Frozen)</h3>
+            <div class="code-block">
+<span class="comment">// This is the Core - DO NOT TOUCH! 🔒</span>
+<span class="keyword">public class</span> <span class="class">SmartQueryServiceV2</span> : <span class="interface">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// Core logic for SQL generation</span>
+        <span class="comment">// Validated and tested - DO NOT MODIFY!</span>
+        <span class="keyword">var</span> result = <span class="keyword">await</span> _ragOrchestrator.<span class="function">ProcessQuery</span>(...);
+        <span class="keyword">return</span> result;
+    }
+}
+            </div>
+
+            <h3>Step 3: Decorator Implementation</h3>
+            <div class="code-block">
+<span class="comment">// Decorator wraps Core and adds Security</span>
+<span class="keyword">public class</span> <span class="class">SecureSmartQueryService</span> : <span class="interface">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">private readonly</span> <span class="interface">ISmartQueryServiceV2</span> _inner;
+    <span class="keyword">private readonly</span> <span class="class">TenantScopedValidator</span> _validator;
+
+    <span class="keyword">public</span> <span class="function">SecureSmartQueryService</span>(
+        <span class="interface">ISmartQueryServiceV2</span> inner,
+        <span class="class">TenantScopedValidator</span> validator)
+    {
+        _inner = inner;
+        _validator = validator;
+    }
+
+    <span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// === NEW BEHAVIOR: Security Check ===</span>
+        <span class="keyword">var</span> validation = <span class="keyword">await</span> _validator.<span class="function">ValidateAsync</span>(request);
+        <span class="keyword">if</span> (!validation.IsValid)
+            <span class="keyword">throw new</span> <span class="class">SecurityException</span>(<span class="string">"Cross-tenant violation detected"</span>);
+
+        <span class="comment">// === DELEGATE TO INNER ===</span>
+        <span class="keyword">return await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+    }
+}
+            </div>
+
+            <h3>Step 4: Another Decorator (Persona)</h3>
+            <div class="code-block">
+<span class="comment">// Another decorator wraps Secure and adds Arabic formatting</span>
+<span class="keyword">public class</span> <span class="class">PersonaEnhancedQueryService</span> : <span class="interface">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">private readonly</span> <span class="interface">ISmartQueryServiceV2</span> _inner;
+    <span class="keyword">private readonly</span> <span class="class">IConfiguration</span> _config;
+
+    <span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// === DELEGATE TO INNER FIRST ===</span>
+        <span class="keyword">var</span> result = <span class="keyword">await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+
+        <span class="comment">// === NEW BEHAVIOR: Format Response ===</span>
+        <span class="keyword">if</span> (_config[<span class="string">"Features:PersonaResponses"</span>] == <span class="string">"true"</span>)
+        {
+            result.Message = <span class="function">FormatInArabicPersona</span>(result.Message);
+        }
+
+        <span class="keyword">return</span> result;
+    }
+
+    <span class="keyword">private string</span> <span class="function">FormatInArabicPersona</span>(<span class="keyword">string</span> message)
+    {
+        <span class="keyword">return</span> <span class="string">$"Hello! 👋\n{message}\nIf you need anything else, I'm at your service! 😉"</span>;
+    }
+}
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🔗 Registration in Program.cs</h2>
+
+            <div class="code-block">
+<span class="comment">// =============================================</span>
+<span class="comment">// Decorator Stack Registration</span>
+<span class="comment">// =============================================</span>
+
+<span class="comment">// 1. Register Core (Concrete)</span>
+builder.Services.<span class="function">AddScoped</span>&lt;<span class="class">SmartQueryServiceV2</span>&gt;();
+
+<span class="comment">// 2. Register Decorator Stack as Interface</span>
+builder.Services.<span class="function">AddScoped</span>&lt;<span class="interface">ISmartQueryServiceV2</span>&gt;(sp =&gt;
+{
+    <span class="comment">// Get dependencies</span>
+    <span class="keyword">var</span> innerService = sp.<span class="function">GetRequiredService</span>&lt;<span class="class">SmartQueryServiceV2</span>&gt;();
+    <span class="keyword">var</span> tenantValidator = sp.<span class="function">GetRequiredService</span>&lt;<span class="class">TenantScopedValidator</span>&gt;();
+    <span class="keyword">var</span> securityLogger = sp.<span class="function">GetService</span>&lt;<span class="class">ILogger</span>&lt;<span class="class">SecureSmartQueryService</span>&gt;&gt;();
+    <span class="keyword">var</span> personaLogger = sp.<span class="function">GetRequiredService</span>&lt;<span class="class">ILogger</span>&lt;<span class="class">PersonaEnhancedQueryService</span>&gt;&gt;();
+    <span class="keyword">var</span> config = sp.<span class="function">GetRequiredService</span>&lt;<span class="class">IConfiguration</span>&gt;();
+
+    <span class="comment">// Layer 1: Core service</span>
+    <span class="comment">// Layer 2: Security decorator (GAP-2)</span>
+    <span class="keyword">var</span> securityWrapped = <span class="keyword">new</span> <span class="class">SecureSmartQueryService</span>(
+        innerService,           <span class="comment">// ← wrap this</span>
+        tenantValidator,
+        securityLogger,
+        config);
+
+    <span class="comment">// Layer 3: Persona decorator (Sprint B) - Outermost</span>
+    <span class="keyword">return new</span> <span class="class">PersonaEnhancedQueryService</span>(
+        securityWrapped,        <span class="comment">// ← wrap security</span>
+        personaLogger,
+        config);
+});
+            </div>
+
+            <div class="visual-box">
+                <div class="decorator-visual">
+                    <div class="decorator-layer layer-outer">
+                        <h4>Caller sees: ISmartQueryServiceV2</h4>
+                        <p>→ PersonaEnhancedQueryService</p>
+                    </div>
+                    <div class="layer-arrow">↓ calls _inner</div>
+                    
+                    <div class="decorator-layer layer-middle">
+                        <h4>→ SecureSmartQueryService</h4>
+                        <p>Security validation + tenant checks</p>
+                    </div>
+                    <div class="layer-arrow">↓ calls _inner</div>
+                    
+                    <div class="decorator-layer layer-core">
+                        <h4>→ SmartQueryServiceV2 (Core)</h4>
+                        <p>Actual SQL generation logic</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚖️ Decorator vs Inheritance</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Inheritance</th>
+                        <th>Decorator Pattern ✅</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Core Modification</td>
+                        <td>Must inherit and modify</td>
+                        <td class="highlight-text">Wrap from outside - Core untouched</td>
+                    </tr>
+                    <tr>
+                        <td>Adding Features</td>
+                        <td>New class for every combination</td>
+                        <td class="highlight-text">New Decorator = New feature</td>
+                    </tr>
+                    <tr>
+                        <td>Runtime Behavior</td>
+                        <td>Fixed compile-time</td>
+                        <td class="highlight-text">Flexible - Decorators chained</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>Hard to test in isolation</td>
+                        <td class="highlight-text">Mock inner service easily</td>
+                    </tr>
+                    <tr>
+                        <td>Feature Flags</td>
+                        <td>Complex</td>
+                        <td class="highlight-text">Decorator on/off via config</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>📝 Step-by-Step: Creating a New Decorator</h2>
+
+            <div class="step-card">
+                <h4><span class="step-number">1</span>Feature Flag</h4>
+                <p>Add flag in <code>appsettings.json</code> to enable/disable the feature</p>
+                <div class="code-block" style="margin-top: 15px;">
+<span class="string">"FeatureFlags:EnableCachingDecorator"</span>: <span class="keyword">true</span>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <h4><span class="step-number">2</span>Class Implementation</h4>
+                <div class="code-block" style="margin-top: 15px;">
+<span class="keyword">public class</span> <span class="class">CachingQueryService</span> : <span class="interface">ISmartQueryServiceV2</span>
+{
+    <span class="keyword">private readonly</span> <span class="interface">ISmartQueryServiceV2</span> _inner;
+    <span class="keyword">private readonly</span> <span class="class">IMemoryCache</span> _cache;
+
+    <span class="keyword">public</span> <span class="function">CachingQueryService</span>(<span class="interface">ISmartQueryServiceV2</span> inner, ...)
+    {
+        _inner = inner;  <span class="comment">// ← wrap</span>
+        _cache = cache;
+    }
+
+    <span class="keyword">public async</span> <span class="function">Task</span>&lt;<span class="class">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(...)
+    {
+        <span class="comment">// Check cache first</span>
+        <span class="keyword">var</span> cacheKey = <span class="function">GenerateCacheKey</span>(request);
+        <span class="keyword">if</span> (_cache.<span class="function">TryGetValue</span>(cacheKey, <span class="keyword">out var</span> cached))
+            <span class="keyword">return</span> cached;
+
+        <span class="comment">// Delegate to inner</span>
+        <span class="keyword">var</span> result = <span class="keyword">await</span> _inner.<span class="function">ExecuteAsync</span>(request, ct);
+
+        <span class="comment">// Cache result</span>
+        _cache.<span class="function">Set</span>(cacheKey, result, TimeSpan.<span class="function">FromMinutes</span>(5));
+        <span class="keyword">return</span> result;
+    }
+}
+                </div>
+            </div>
+
+            <div class="step-card">
+                <h4><span class="step-number">3</span>Registration</h4>
+                <p>Add Decorator to the stack in <code>Program.cs</code></p>
+                <div class="code-block" style="margin-top: 15px;">
+<span class="comment">// Layer 4: Caching (newest)</span>
+<span class="comment">// Layer 3: Persona</span>
+<span class="comment">// Layer 2: Security</span>
+<span class="comment">// Layer 1: Core</span>
+
+<span class="keyword">var</span> personaWrapped = <span class="keyword">new</span> <span class="class">PersonaEnhancedQueryService</span>(securityWrapped, ...);
+<span class="keyword">return new</span> <span class="class">CachingQueryService</span>(personaWrapped, cache, config);
+                </div>
+            </div>
+
+            <div class="step-card">
+                <h4><span class="step-number">4</span>Test</h4>
+                <p>Test the Decorator isolated with Mock for inner service</p>
+                <div class="code-block" style="margin-top: 15px;">
+[<span class="function">Fact</span>]
+<span class="keyword">public async</span> <span class="function">Task</span> <span class="function">CachingDecorator_ReturnsCachedResult</span>()
+{
+    <span class="comment">// Arrange</span>
+    <span class="keyword">var</span> mockInner = <span class="keyword">new</span> <span class="class">Mock</span>&lt;<span class="interface">ISmartQueryServiceV2</span>&gt;();
+    <span class="keyword">var</span> decorator = <span class="keyword">new</span> <span class="class">CachingQueryService</span>(mockInner.Object, cache);
+
+    <span class="comment">// Act</span>
+    <span class="keyword">var</span> result = <span class="keyword">await</span> decorator.<span class="function">ExecuteAsync</span>(request);
+
+    <span class="comment">// Assert</span>
+    mockInner.<span class="function">Verify</span>(x =&gt; x.<span class="function">ExecuteAsync</span>(...), <span class="class">Times</span>.Once);
+}
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>⚠️ Common Pitfalls</h2>
+
+            <div class="warning-box">
+                <h4>❌ Mistake 1: Modifying Core</h4>
+                <p>If you want to add a feature, don't modify <code>SmartQueryServiceV2</code> - create a new Decorator!</p>
+            </div>
+
+            <div class="warning-box" style="border-color: #ffc107; background: rgba(255, 193, 7, 0.1);">
+                <h4 style="color: #ffc107;">⚠️ Mistake 2: Forgetting to Register</h4>
+                <p>The Decorator won't execute by itself - you must register it in <code>Program.cs</code> and add to the stack</p>
+            </div>
+
+            <div class="warning-box" style="border-color: #00d4aa; background: rgba(0, 212, 170, 0.1);">
+                <h4 style="color: #00d4aa;">💡 Tip: Order matters!</h4>
+                <p>Decorator order is important - Security should be close to Core, Persona outside</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>WISC AI Documentation | Decorator Pattern Guide (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture Deep Dive</a>
+                <a href="WISC_DEVELOPMENT.html">💻 Development Guide</a>
+                <a href="WISC_API.html">🔌 API Reference</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

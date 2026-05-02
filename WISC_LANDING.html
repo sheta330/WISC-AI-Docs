@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WISC AI - Voice-Powered Accounting with Egyptian Arabic NLP, Local-First AI, and Additive Architecture">
+    <title>WISC AI | The Future of Voice-Powered Accounting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy-deep: #0a0a1a;
+            --navy-mid: #1a1a2e;
+            --navy-light: #16213e;
+            --crimson: #e94560;
+            --crimson-glow: rgba(233, 69, 96, 0.4);
+            --gold: #ffd700;
+            --gold-soft: #ffc107;
+            --teal: #00d4aa;
+            --purple: #8a2be2;
+            --text-primary: #eaeaea;
+            --text-secondary: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-mid) 50%, var(--navy-light) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(233, 69, 96, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 212, 170, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .nav-logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--crimson);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--crimson), #ff6b6b);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid var(--teal);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            color: var(--teal);
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 212, 170, 0); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5em, 6vw, 4.5em);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, var(--crimson) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1em, 2.5vw, 1.5em);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--crimson), #ff4757);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+            border: 2px solid transparent;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(233, 69, 96, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-cta svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-cta:hover svg {
+            transform: translateX(5px);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--gold);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Value Proposition Section */
+        .value-section {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5em;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1em;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .value-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .value-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .value-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .value-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(233, 69, 96, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .value-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(255, 193, 7, 0.2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .value-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .value-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .value-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .value-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        .value-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--teal);
+            font-weight: bold;
+        }
+
+        /* Tech Stack Section */
+        .tech-section {
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--purple);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.2);
+        }
+
+        .tech-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tech-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tech-version {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        /* Sitemap Section */
+        .sitemap-section {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+        }
+
+        .sitemap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+
+        .sitemap-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .sitemap-card:hover {
+            background: rgba(233, 69, 96, 0.1);
+            border-color: var(--crimson);
+            transform: translateX(10px);
+        }
+
+        .sitemap-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .sitemap-content {
+            flex: 1;
+        }
+
+        .sitemap-content h4 {
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .sitemap-content p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .sitemap-arrow {
+            color: var(--crimson);
+            font-size: 1.2em;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .sitemap-card:hover .sitemap-arrow {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .hero-stats {
+                gap: 30px;
+            }
+
+            .stat-number {
+                font-size: 2em;
+            }
+
+            .value-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-grid {
+                gap: 30px;
+            }
+
+            .sitemap-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <div class="nav-logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" stroke="#ffd700" stroke-width="3"/>
+                    <path d="M30 50 L45 65 L70 35" stroke="#e94560" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="50" cy="50" r="8" fill="#00d4aa"/>
+                </svg>
+                WISC AI
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#tech-stack" class="nav-link">Tech Stack</a>
+                <a href="#docs" class="nav-link">Documentation</a>
+                <a href="https://github.com" class="nav-cta">GitHub</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>�</span> Under Active Development
+                </div>
+                <h1>WISC AI: The Future of Voice-Powered Accounting</h1>
+                <p class="hero-subtitle">
+                    An <strong>Additive, Secure, and Egyptian-Arabic First</strong> AI Orchestration Layer.<br>
+                    Transform natural language into precise SQL queries—offline, secure, and scalable.
+                </p>
+                <a href="WISC_INTRO.html" class="hero-cta">
+                    Explore Architecture
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Layer Architecture</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Offline Capable</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">EG</span>
+                        <span class="stat-label">Arabic First</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Cloud Dependencies</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Proposition Section -->
+        <section class="value-section" id="features">
+            <div class="section-header">
+                <h2>Why WISC AI?</h2>
+                <p>Built for enterprise accounting with a revolutionary additive architecture that protects your core logic while enabling limitless extensibility.</p>
+            </div>
+
+            <div class="value-grid">
+                <!-- Secure AI Card -->
+                <div class="value-card">
+                    <div class="value-icon">🛡️</div>
+                    <h3>Trust Layer Security</h3>
+                    <p>Multi-layered security architecture with tenant isolation, business rule validation, and AI-generated SQL guards.</p>
+                    <ul class="value-features">
+                        <li>Cross-tenant violation prevention</li>
+                        <li>Business rule enforcement (no overdrafts)</li>
+                        <li>Dangerous SQL keyword blocking</li>
+                        <li>Smart tag column protection</li>
+                    </ul>
+                </div>
+
+                <!-- Local-First Card -->
+                <div class="value-card">
+                    <div class="value-icon">💻</div>
+                    <h3>Strict Offline Mode</h3>
+                    <p>Zero cloud dependencies. All AI processing runs locally via Ollama—your data never leaves your infrastructure.</p>
+                    <ul class="value-features">
+                        <li>Local LLM via Ollama (llama3.2)</li>
+                        <li>SQLite vector store for RAG</li>
+                        <li>No API keys or internet required</li>
+                        <li>Complete data sovereignty</li>
+                    </ul>
+                </div>
+
+                <!-- Arabic NLP Card -->
+                <div class="value-card">
+                    <div class="value-icon">🗣️</div>
+                    <h3>Egyptian Arabic NLP</h3>
+                    <p>First-class support for Egyptian dialect (Ammiya). Natural conversations like "هاتلي فلوس أحمد" just work.</p>
+                    <ul class="value-features">
+                        <li>Intent classification for dialect</li>
+                        <li>Arabic persona responses</li>
+                        <li>Cultural context awareness</li>
+                        <li>Transliteration support</li>
+                    </ul>
+                </div>
+
+                <!-- Additive Architecture Card -->
+                <div class="value-card">
+                    <div class="value-icon">🧊</div>
+                    <h3>Additive Architecture</h3>
+                    <p>Core logic is frozen and protected. New features are added as decorator layers—zero risk to existing functionality.</p>
+                    <ul class="value-features">
+                        <li>Decorator pattern stack</li>
+                        <li>Feature flags for safe rollout</li>
+                        <li>Backward compatibility guaranteed</li>
+                        <li>Non-disruptive development</li>
+                    </ul>
+                </div>
+
+                <!-- RAG Pipeline Card -->
+                <div class="value-card">
+                    <div class="value-icon">🧠</div>
+                    <h3>RAG Pipeline</h3>
+                    <p>Retrieval-Augmented Generation with 4-layer context compression for accurate SQL generation from your schema.</p>
+                    <ul class="value-features">
+                        <li>Semantic schema retrieval</li>
+                        <li>Smart tag injection</li>
+                        <li>Token budget management</li>
+                        <li>Query decomposition</li>
+                    </ul>
+                </div>
+
+                <!-- Real-time Card -->
+                <div class="value-card">
+                    <div class="value-icon">⚡</div>
+                    <h3>Real-time Thought Stream</h3>
+                    <p>SignalR WebSocket broadcasts AI processing steps to the UI—users see exactly what's happening.</p>
+                    <ul class="value-features">
+                        <li>Live processing updates</li>
+                        <li>Arabic & English status messages</li>
+                        <li>Progress indicators</li>
+                        <li>Error transparency</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="tech-section" id="tech-stack">
+            <div class="section-header">
+                <h2>Powered By</h2>
+                <p>Modern, battle-tested technologies for enterprise-grade performance</p>
+            </div>
+
+            <div class="tech-grid">
+                <!-- .NET 9 -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <rect width="100" height="100" rx="20" fill="#512BD4"/>
+                            <text x="50" y="65" text-anchor="middle" fill="white" font-size="45" font-weight="bold">.NET</text>
+                        </svg>
+                    </div>
+                    <span class="tech-name">.NET 9</span>
+                    <span class="tech-version">Backend API</span>
+                </div>
+
+                <!-- Angular -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <polygon points="50,10 90,25 85,75 50,90 15,75 10,25" fill="#DD0031"/>
+                            <polygon points="50,20 80,30 75,70 50,80 25,70 20,30" fill="#C3002F"/>
+                            <text x="50" y="60" text-anchor="middle" fill="white" font-size="35" font-weight="bold">A</text>
+                        </svg>
+                    </div>
+                    <span class="tech-name">Angular</span>
+                    <span class="tech-version">Web Frontend</span>
+                </div>
+
+                <!-- Flutter -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <rect width="100" height="100" rx="20" fill="#02569B"/>
+                            <path d="M50 30 L70 30 L50 50 L30 50 Z" fill="#54C5F8"/>
+                            <path d="M50 50 L70 50 L50 70 L30 70 Z" fill="#54C5F8"/>
+                            <path d="M30 70 L50 70 L40 80 Z" fill="#54C5F8"/>
+                        </svg>
+                    </div>
+                    <span class="tech-name">Flutter</span>
+                    <span class="tech-version">Mobile App</span>
+                </div>
+
+                <!-- SignalR -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <circle cx="50" cy="50" r="40" stroke="#00d4aa" stroke-width="3" fill="none"/>
+                            <circle cx="50" cy="50" r="25" stroke="#ffd700" stroke-width="2" fill="none"/>
+                            <circle cx="50" cy="50" r="10" fill="#e94560"/>
+                            <path d="M50 10 L50 25 M50 75 L50 90 M10 50 L25 50 M75 50 L90 50" stroke="#00d4aa" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <span class="tech-name">SignalR</span>
+                    <span class="tech-version">Real-time WebSocket</span>
+                </div>
+
+                <!-- Ollama -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <rect width="100" height="100" rx="20" fill="#1a1a2e"/>
+                            <circle cx="35" cy="40" r="8" fill="#fff"/>
+                            <circle cx="65" cy="40" r="8" fill="#fff"/>
+                            <path d="M35 60 Q50 75 65 60" stroke="#fff" stroke-width="3" fill="none"/>
+                            <circle cx="50" cy="85" r="5" fill="#e94560"/>
+                        </svg>
+                    </div>
+                    <span class="tech-name">Ollama</span>
+                    <span class="tech-version">Local LLM</span>
+                </div>
+
+                <!-- SQLite -->
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 100 100" fill="none">
+                            <ellipse cx="50" cy="30" rx="30" ry="15" fill="#0f80cc"/>
+                            <path d="M20 30 L20 70 Q50 85 80 70 L80 30" fill="#0f80cc"/>
+                            <ellipse cx="50" cy="70" rx="30" ry="15" fill="#1498e9"/>
+                            <text x="50" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">SQLite</text>
+                        </svg>
+                    </div>
+                    <span class="tech-name">SQLite</span>
+                    <span class="tech-version">Vector Store</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sitemap Section -->
+        <section class="sitemap-section" id="docs">
+            <div class="section-header">
+                <h2>Documentation Portal</h2>
+                <p>Comprehensive technical documentation for developers and architects</p>
+            </div>
+
+            <div class="sitemap-grid">
+                <a href="WISC_INTRO.html" class="sitemap-card">
+                    <div class="sitemap-icon">🗺️</div>
+                    <div class="sitemap-content">
+                        <h4>Cognitive Map</h4>
+                        <p>Start here - System overview & architecture stack</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_ARCHITECTURE.html" class="sitemap-card">
+                    <div class="sitemap-icon">🏗️</div>
+                    <div class="sitemap-content">
+                        <h4>Architecture Deep Dive</h4>
+                        <p>4-Layer architecture & component details</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_DECORATORS.html" class="sitemap-card">
+                    <div class="sitemap-icon">🎨</div>
+                    <div class="sitemap-content">
+                        <h4>Decorator Pattern</h4>
+                        <p>How to extend without modifying core</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_DATABASE.html" class="sitemap-card">
+                    <div class="sitemap-icon">🗄️</div>
+                    <div class="sitemap-content">
+                        <h4>Database Schema</h4>
+                        <p>Data dictionary & entity relationships</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_CONTRACTS.html" class="sitemap-card">
+                    <div class="sitemap-icon">📋</div>
+                    <div class="sitemap-content">
+                        <h4>JSON Contracts</h4>
+                        <p>API request/response schemas</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_API.html" class="sitemap-card">
+                    <div class="sitemap-icon">🔌</div>
+                    <div class="sitemap-content">
+                        <h4>API Reference</h4>
+                        <p>Endpoints, authentication & examples</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_SIGNALR.html" class="sitemap-card">
+                    <div class="sitemap-icon">📡</div>
+                    <div class="sitemap-content">
+                        <h4>SignalR Thought Stream</h4>
+                        <p>Real-time WebSocket messages</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_BUSINESS_RULES.html" class="sitemap-card">
+                    <div class="sitemap-icon">⚖️</div>
+                    <div class="sitemap-content">
+                        <h4>Business Rules</h4>
+                        <p>Trust layer & security registry</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_DOCKER.html" class="sitemap-card">
+                    <div class="sitemap-icon">🐳</div>
+                    <div class="sitemap-content">
+                        <h4>Docker & Architecture</h4>
+                        <p>Container orchestration & microservices</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+
+                <a href="WISC_DEVELOPMENT.html" class="sitemap-card">
+                    <div class="sitemap-icon">💻</div>
+                    <div class="sitemap-content">
+                        <h4>Development Guide</h4>
+                        <p>Step-by-step feature development</p>
+                    </div>
+                    <span class="sitemap-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">🧠 WISC AI</div>
+            <p>Voice-Powered Accounting Intelligence for the Egyptian Market</p>
+            <div class="footer-links">
+                <a href="WISC_INTRO.html">Documentation</a>
+                <a href="WISC_API.html">API</a>
+                <a href="WISC_BUSINESS_RULES.html">Security</a>
+                <a href="mailto:team@wisc-erp.com">Contact</a>
+            </div>
+            <p style="margin-top: 30px; font-size: 0.85em; opacity: 0.6;">
+                © 2024 WISC AI. Built with 🔥 in Cairo. (Work in Progress)
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

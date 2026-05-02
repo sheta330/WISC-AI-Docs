@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - Cognitive Map & Integrative Development</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(233, 69, 96, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #e94560;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #e94560;
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #e94560;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #e94560;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .stack-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .stack-layer {
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stack-layer:hover {
+            transform: translateX(10px);
+        }
+
+        .layer-4 { background: linear-gradient(90deg, rgba(233, 69, 96, 0.3), rgba(233, 69, 96, 0.1)); border-left: 4px solid #e94560; }
+        .layer-3 { background: linear-gradient(90deg, rgba(0, 212, 170, 0.3), rgba(0, 212, 170, 0.1)); border-left: 4px solid #00d4aa; }
+        .layer-2 { background: linear-gradient(90deg, rgba(255, 193, 7, 0.3), rgba(255, 193, 7, 0.1)); border-left: 4px solid #ffc107; }
+        .layer-1 { background: linear-gradient(90deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1)); border-left: 4px solid #8a2be2; }
+
+        .stack-layer h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .stack-layer .layer-name {
+            font-size: 0.9em;
+            color: #a0a0a0;
+            margin-bottom: 15px;
+        }
+
+        .layer-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Tooltip Component Tag */
+        .component-tag {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            cursor: help;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .component-tag:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Tooltip Styling */
+        .component-tag .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            width: 320px;
+            max-width: 90vw;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .component-tag .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .component-tag .tooltip h5 {
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .component-tag .tooltip p {
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .component-tag .tooltip .tech-detail {
+            color: #00d4aa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            background: rgba(0, 212, 170, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .component-tag:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Flow Section */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e94560;
+            font-size: 1.5em;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #e94560;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            color: #a0a0a0;
+            font-size: 0.95em;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .info-table th {
+            background: rgba(233, 69, 96, 0.3);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .info-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .status-safe {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+
+        .status-frozen {
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .function {
+            color: #d2a8ff;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #e94560;
+        }
+
+        .card h4 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .card p {
+            color: #a0a0a0;
+            font-size: 0.95em;
+        }
+
+        .principle-box {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.05));
+            border: 2px solid #00d4aa;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .principle-box h3 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+        }
+
+        .principle-box .emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+            
+            .flow-step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .component-tag .tooltip {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🧠 WISC AI</h1>
+            <p class="subtitle">
+                Cognitive Map & Integrative Development<br>
+                Additive Architecture for Egyptian Arabic ERP Intelligence
+            </p>
+            <span class="badge">🚧 Under Development</span>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link active">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DECORATORS.html" class="nav-link">🎨 Decorator Pattern</a>
+            <a href="WISC_DEVELOPMENT.html" class="nav-link">💻 Development Guide</a>
+            <a href="WISC_API.html" class="nav-link">🔌 API Reference</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <!-- Core Principle -->
+        <div class="principle-box">
+            <div class="emoji">🧊 🌿</div>
+            <h3>Core Principle: Additive Architecture</h3>
+            <p>Every new feature = New layer from outside | Core Logic = Protected & Frozen</p>
+        </div>
+
+        <!-- Architecture Stack -->
+        <section class="section">
+            <h2>🏗️ The Architecture Stack (4 Layers)</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">Hover over any component to see detailed explanation</p>
+            
+            <div class="stack-container">
+                <!-- Layer 4 -->
+                <div class="stack-layer layer-4">
+                    <h4>Layer 4: Presentation (API Controllers)</h4>
+                    <p class="layer-name">User entry point - HTTP/API Layer</p>
+                    <div class="layer-components">
+                        <div class="component-tag">
+                            UnifiedSmartQueryController
+                            <div class="tooltip">
+                                <h5>🎯 Main API Entry Point</h5>
+                                <p>Primary controller for AI-powered natural language queries. Handles JWT authentication, request validation, session management, and delegates to service layer.</p>
+                                <span class="tech-detail">Route: POST /api/v2/UnifiedSmartQuery/query</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            AiChatController
+                            <div class="tooltip">
+                                <h5>💬 Legacy Chat Endpoint</h5>
+                                <p>Original chat controller maintained for backward compatibility. Handles conversational AI interactions with context memory.</p>
+                                <span class="tech-detail">Legacy: Maintained for existing clients</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            HealthController
+                            <div class="tooltip">
+                                <h5>🏥 System Health Monitor</h5>
+                                <p>Provides health check endpoints for monitoring system status, database connectivity, and AI service availability.</p>
+                                <span class="tech-detail">Routes: /health, /health/ai</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layer 3 -->
+                <div class="stack-layer layer-3">
+                    <h4>Layer 3: Service Decorators (Additions)</h4>
+                    <p class="layer-name">New features (Additive-Only) - Decorator Pattern Stack</p>
+                    <div class="layer-components">
+                        <div class="component-tag">
+                            Feature Decorators (New)
+                            <div class="tooltip">
+                                <h5>🆕 Your New Decorators Here</h5>
+                                <p>Extension point for new features. Create decorators that wrap existing services to add behavior without modifying core logic.</p>
+                                <span class="tech-detail">Pattern: Decorator → wraps inner service</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            PersonaEnhancedQueryService
+                            <div class="tooltip">
+                                <h5>🎭 Arabic Persona Formatter</h5>
+                                <p>Adds Egyptian Arabic persona to responses. Transforms technical outputs into friendly, culturally-appropriate messages.</p>
+                                <span class="tech-detail">Sprint B: Response formatting layer</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            SecureSmartQueryService
+                            <div class="tooltip">
+                                <h5>🔒 Security Validator</h5>
+                                <p>Validates tenant isolation and cross-tenant safety. Ensures queries only access authorized tenant data.</p>
+                                <span class="tech-detail">GAP-2: Cross-tenant validation</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            SmartQueryServiceV2 (Core 🔒)
+                            <div class="tooltip">
+                                <h5>⚙️ Core Service (FROZEN)</h5>
+                                <p>The immutable core containing SQL generation logic. NEVER MODIFY. All extensions must use Decorator pattern.</p>
+                                <span class="tech-detail">🔒 Frozen - Use Decorators to extend</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layer 2 -->
+                <div class="stack-layer layer-2">
+                    <h4>Layer 2: Orchestration (The Brain)</h4>
+                    <p class="layer-name">AI coordination layer - Core Intelligence</p>
+                    <div class="layer-components">
+                        <div class="component-tag">
+                            RagOrchestrator
+                            <div class="tooltip">
+                                <h5>🎯 Main AI Coordinator</h5>
+                                <p>Central orchestrator that coordinates all AI components. Manages query flow from intent classification to SQL execution.</p>
+                                <span class="tech-detail">Core: RAG (Retrieval Augmented Generation)</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            StrictProductionOrchestrator
+                            <div class="tooltip">
+                                <h5>🛡️ Production-Grade Orchestrator</h5>
+                                <p>3-Level Protocol: Tool → Semantic SQL → Metadata Fallback. Strict validation for production environments.</p>
+                                <span class="tech-detail">Protocol: Tool-First with SQL Fallback</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            CommandGenerator
+                            <div class="tooltip">
+                                <h5>🧠 SQL Generator</h5>
+                                <p>Generates SQL queries from natural language using LLM. Builds prompts with metadata context and smart tags.</p>
+                                <span class="tech-detail">Uses: OllamaProvider + Metadata</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            IntentClassifier
+                            <div class="tooltip">
+                                <h5>🔍 Intent Detector</h5>
+                                <p>Classifies user intent from Egyptian Arabic or English queries. Determines query type: Balance, Transaction, Invoice, etc.</p>
+                                <span class="tech-detail">Languages: Egyptian Arabic (Ammiya) + English</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            QueryDecomposer
+                            <div class="tooltip">
+                                <h5>📊 Query Breakdown</h5>
+                                <p>Breaks complex multi-part queries into simpler sub-queries for sequential processing.</p>
+                                <span class="tech-detail">Example: "Show sales AND top customers" → 2 queries</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layer 1 -->
+                <div class="stack-layer layer-1">
+                    <h4>Layer 1: Infrastructure (The Engine)</h4>
+                    <p class="layer-name">Engine & storage - External Services</p>
+                    <div class="layer-components">
+                        <div class="component-tag">
+                            OllamaProvider
+                            <div class="tooltip">
+                                <h5>🤖 Local LLM Provider</h5>
+                                <p>Connects to local Ollama instance (http://localhost:11434). Strictly offline - no cloud APIs for security.</p>
+                                <span class="tech-detail">Model: llama3.2 (configurable)</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            SqliteVectorStore
+                            <div class="tooltip">
+                                <h5>💾 Vector Database</h5>
+                                <p>SQLite-based vector store for semantic search and RAG. Stores embeddings for offline similarity search.</p>
+                                <span class="tech-detail">File: wisc_vectors.db</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            TokenLimiter
+                            <div class="tooltip">
+                                <h5>📏 Context Compressor</h5>
+                                <p>4-Layer Constructive Compression: Schema → Samples → Knowledge → SmartTags. Optimizes LLM context window.</p>
+                                <span class="tech-detail">Budget: Configurable token limit</span>
+                            </div>
+                        </div>
+                        <div class="component-tag">
+                            EmbeddingProvider
+                            <div class="tooltip">
+                                <h5>🔢 Vector Embedder</h5>
+                                <p>Generates vector embeddings for semantic search. Uses Ollama embeddings for similarity matching.</p>
+                                <span class="tech-detail">Purpose: RAG semantic retrieval</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Flow -->
+        <section class="section">
+            <h2>🔄 Data Flow</h2>
+            
+            <div class="flow-container">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>UnifiedSmartQueryController</h4>
+                        <p>Extract Tenant/User from JWT → Validate ModelState → Resolve Session</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>ISmartQueryServiceV2 (Decorator Stack)</h4>
+                        <p>SecureSmartQueryService (checks tenant) → PersonaEnhancedQueryService (Arabic formatting)</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>SmartQueryServiceV2 (Core - Frozen)</h4>
+                        <p>Build context (metadata + smart tags) → Call RagOrchestrator</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>RagOrchestrator (The Brain)</h4>
+                        <p>Intent Classification (Egyptian/English) → Command Generation (SQL from LLM) → Secure Execution</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Response</h4>
+                        <p>Data (JSON) + Generated SQL (transparency) + Metadata (tokens, steps, intent)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Development Contracts -->
+        <section class="section">
+            <h2>📜 Development Contracts</h2>
+            
+            <h3>Contract 1: ISmartQueryServiceV2 (The Red Line)</h3>
+            <div class="code-block">
+<span class="comment">// The contract all Decorators must implement</span>
+<span class="keyword">public interface</span> <span class="function">ISmartQueryServiceV2</span>
+{
+    <span class="function">Task</span>&lt;<span class="function">SmartQueryResponseV2</span>&gt; <span class="function">ExecuteAsync</span>(
+        <span class="function">SmartQueryRequestV2</span> request, 
+        <span class="function">CancellationToken</span> ct);
+}
+
+<span class="comment">// Rule: Any new feature must be a Decorator, not an Override</span>
+            </div>
+
+            <h3>Contract 2: Feature Flags</h3>
+            <div class="code-block">
+{
+  <span class="string">"Features:PersonaResponses"</span>: <span class="keyword">true</span>,
+  <span class="string">"FeatureFlags:EnableSmartTags"</span>: <span class="keyword">true</span>,
+  <span class="string">"FeatureFlags:EnableNewFeatureX"</span>: <span class="keyword">false</span>  <span class="comment">// ← Add yours here</span>
+}
+            </div>
+        </section>
+
+        <!-- Extension Points -->
+        <section class="section">
+            <h2>🎯 Extension Points: Where to Develop?</h2>
+            
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Example Development</th>
+                        <th>Files</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>New Decorator</td>
+                        <td>Add caching layer</td>
+                        <td><code>*QueryService.cs</code></td>
+                        <td class="status-safe">🟢 Safe</td>
+                    </tr>
+                    <tr>
+                        <td>New Endpoint</td>
+                        <td>Add batch queries</td>
+                        <td><code>UnifiedSmartQueryController.cs</code></td>
+                        <td class="status-safe">🟢 Safe</td>
+                    </tr>
+                    <tr>
+                        <td>New Tool</td>
+                        <td>Add Excel export</td>
+                        <td><code>WiscToolRegistry.cs</code></td>
+                        <td class="status-safe">🟢 Safe</td>
+                    </tr>
+                    <tr>
+                        <td>New Intent Handler</td>
+                        <td>Add "Report Generator"</td>
+                        <td><code>*IntentHandler.cs</code></td>
+                        <td class="status-safe">🟢 Safe</td>
+                    </tr>
+                    <tr>
+                        <td>Core Service</td>
+                        <td>Modify ExecuteAsync</td>
+                        <td><code>SmartQueryServiceV2.cs</code></td>
+                        <td class="status-frozen">🔴 Frozen</td>
+                    </tr>
+                    <tr>
+                        <td>Domain Entities</td>
+                        <td>Change Entity structure</td>
+                        <td><code>WISC.Domain/</code></td>
+                        <td class="status-frozen">🔴 Frozen</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Development Guide -->
+        <section class="section">
+            <h2>📝 Integrative Development Pattern (Step-by-Step)</h2>
+            
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>1. Feature Flag</h4>
+                    <p>appsettings.json → "FeatureFlags:EnableX": false</p>
+                </div>
+                <div class="card">
+                    <h4>2. Interface (Contract)</h4>
+                    <p>public interface IXService { }</p>
+                </div>
+                <div class="card">
+                    <h4>3. Implementation</h4>
+                    <p>public class XService : IXService { }</p>
+                </div>
+                <div class="card">
+                    <h4>4. Decorator</h4>
+                    <p>Wrap ISmartQueryServiceV2 if needed</p>
+                </div>
+                <div class="card">
+                    <h4>5. Registration</h4>
+                    <p>Program.cs → Add to decorator stack</p>
+                </div>
+                <div class="card">
+                    <h4>6. Toggle</h4>
+                    <p>Set flag → true (when ready)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2>🎓 Golden Summary</h2>
+            
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>Want to develop...</th>
+                        <th>Create...</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Behavior on Query</td>
+                        <td>Decorator</td>
+                        <td><code>Program.cs</code> stack</td>
+                    </tr>
+                    <tr>
+                        <td>New API capability</td>
+                        <td>Endpoint</td>
+                        <td><code>UnifiedSmartQueryController.cs</code></td>
+                    </tr>
+                    <tr>
+                        <td>AI Intelligence</td>
+                        <td>Intent Handler</td>
+                        <td><code>*IntentHandler.cs</code></td>
+                    </tr>
+                    <tr>
+                        <td>Data source</td>
+                        <td>Provider</td>
+                        <td><code>WISC.AI.Mind.Providers</code></td>
+                    </tr>
+                    <tr>
+                        <td>Security rule</td>
+                        <td>Validator</td>
+                        <td><code>WISC.AI.Commands.Sql.Security</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="principle-box" style="margin-top: 40px;">
+                <h3>The Final Principle</h3>
+                <p style="font-size: 1.3em; margin-top: 15px;">
+                    🧊 <strong>Core = Ice</strong> | 🌿 <strong>Extensions = Greenery</strong>
+                </p>
+                <p style="margin-top: 15px;">
+                    Core Logic is fully protected | Development happens via Decorators from outside
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>WISC AI Documentation | Additive Architecture Guide (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture Deep Dive</a>
+                <a href="WISC_DECORATORS.html">🎨 Decorator Pattern</a>
+                <a href="WISC_DEVELOPMENT.html">💻 Development Guide</a>
+                <a href="WISC_API.html">🔌 API Reference</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

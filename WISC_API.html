@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - API Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(233, 69, 96, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #e94560;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #e94560;
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #e94560;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #e94560;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .endpoint-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .http-method {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .method-post {
+            background: #00d4aa;
+            color: #1a1a2e;
+        }
+
+        .method-get {
+            background: #0096ff;
+            color: white;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #ffd700;
+        }
+
+        .endpoint-title {
+            color: #eaeaea;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .number {
+            color: #79c0ff;
+        }
+
+        .code-block .property {
+            color: #ffa657;
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .param-table th {
+            background: rgba(233, 69, 96, 0.3);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .param-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .param-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .required {
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .optional {
+            color: #8b949e;
+        }
+
+        .response-success {
+            border-left: 4px solid #00d4aa;
+            padding-left: 20px;
+        }
+
+        .response-error {
+            border-left: 4px solid #e94560;
+            padding-left: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+
+        .badge-auth {
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+
+        .badge-rate {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .badge-offline {
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+        }
+
+        .auth-section {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(233, 69, 96, 0.05));
+            border: 2px solid #e94560;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .auth-section h4 {
+            color: #e94560;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.05));
+            border: 2px solid #00d4aa;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .info-box h4 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+        }
+
+        .status-code {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .status-200 {
+            background: #00d4aa;
+            color: #1a1a2e;
+        }
+
+        .status-400 {
+            background: #ffc107;
+            color: #1a1a2e;
+        }
+
+        .status-401 {
+            background: #e94560;
+            color: white;
+        }
+
+        .status-429 {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔌 API Reference</h1>
+            <p class="subtitle">
+                Comprehensive Guide to All API Endpoints<br>
+                WISC AI REST API Documentation
+            </p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DECORATORS.html" class="nav-link">🎨 Decorator Pattern</a>
+            <a href="WISC_DEVELOPMENT.html" class="nav-link">💻 Development Guide</a>
+            <a href="WISC_API.html" class="nav-link active">🔌 API Reference</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <section class="section">
+            <h2>🌐 Base URL</h2>
+            
+            <div class="code-block">
+https://api.wisc-erp.com/api/v2
+
+<span class="comment">// For local development:</span>
+http://localhost:5000/api/v2
+            </div>
+        </section>
+
+        <div class="auth-section">
+            <h4>🔐 Authentication</h4>
+            <p>All Endpoints (except Health) require JWT Token:</p>
+            <div class="code-block" style="margin-top: 15px;">
+Authorization: Bearer {your_jwt_token}
+
+<span class="comment">// Required Claims:</span>
+<span class="comment">// - TenantId (Guid)</span>
+<span class="comment">// - NameIdentifier (UserId - Guid)</span>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>🤖 AI Query Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-post">POST</span>
+                    <span class="endpoint-path">/UnifiedSmartQuery/query</span>
+                    <span class="badge badge-auth">🔒 Auth</span>
+                    <span class="badge badge-rate">⏱️ Rate Limited</span>
+                </div>
+                <p class="endpoint-title">Execute Natural Language Query</p>
+                <p>Main endpoint for AI queries in Arabic or English</p>
+
+                <h4>Request Body</h4>
+                <div class="code-block">
+{
+  <span class="property">"query"</span>: <span class="string">"Show Ahmed's balance"</span>,           <span class="comment">// required, min 2 chars, max 500</span>
+  <span class="property">"sessionId"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,  <span class="comment">// optional - for context</span>
+  <span class="property">"connectionString"</span>: <span class="string">"Server=..."</span>,     <span class="comment">// required for new sessions</span>
+  <span class="property">"databaseType"</span>: <span class="string">"SqlServer"</span>            <span class="comment">// optional - default: SqlServer</span>
+}
+                </div>
+
+                <h4>Response <span class="status-code status-200">200 OK</span></h4>
+                <div class="code-block response-success">
+{
+  <span class="property">"success"</span>: <span class="keyword">true</span>,
+  <span class="property">"generatedSql"</span>: <span class="string">"SELECT c.Name, b.Balance FROM Customers c..."</span>,
+  <span class="property">"data"</span>: [
+    { <span class="property">"name"</span>: <span class="string">"Ahmed"</span>, <span class="property">"balance"</span>: <span class="number">15000</span> }
+  ],
+  <span class="property">"rowCount"</span>: <span class="number">1</span>,
+  <span class="property">"executionTimeMs"</span>: <span class="number">245</span>,
+  <span class="property">"intent"</span>: <span class="string">"CustomerBalanceInquiry"</span>,
+  <span class="property">"intentConfidence"</span>: <span class="number">0.95</span>,
+  <span class="property">"correlationId"</span>: <span class="string">"a1b2c3d4e5f67890"</span>,
+  <span class="property">"sessionId"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+  <span class="property">"message"</span>: <span class="string">"Hello! 👋 Found Ahmed's balance: 15,000 EGP. If you need anything else, I'm at your service! 😉"</span>
+}
+                </div>
+
+                <h4>Error Response <span class="status-code status-400">400 Bad Request</span></h4>
+                <div class="code-block response-error">
+{
+  <span class="property">"success"</span>: <span class="keyword">false</span>,
+  <span class="property">"errorCode"</span>: <span class="string">"InvalidQuery"</span>,
+  <span class="property">"errorMessage"</span>: <span class="string">"Query could not be understood. Please rephrase."</span>,
+  <span class="property">"errorType"</span>: <span class="string">"ValidationError"</span>,
+  <span class="property">"correlationId"</span>: <span class="string">"a1b2c3d4e5f67890"</span>,
+  <span class="property">"generatedSql"</span>: <span class="keyword">null</span>,
+  <span class="property">"executionSteps"</span>: [<span class="string">"IntentClassification"</span>, <span class="string">"Failed"</span>]
+}
+                </div>
+
+                <h4>Parameters</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>query</td>
+                            <td>string</td>
+                            <td class="required">Yes</td>
+                            <td>Query in Arabic or English (2-500 chars)</td>
+                        </tr>
+                        <tr>
+                            <td>sessionId</td>
+                            <td>Guid?</td>
+                            <td class="optional">No</td>
+                            <td>For conversation context - creates new session if not provided</td>
+                        </tr>
+                        <tr>
+                            <td>connectionString</td>
+                            <td>string?</td>
+                            <td class="optional">Conditional</td>
+                            <td>Required if sessionId not provided (new session)</td>
+                        </tr>
+                        <tr>
+                            <td>databaseType</td>
+                            <td>string?</td>
+                            <td class="optional">No</td>
+                            <td>SqlServer | PostgreSQL | SQLite (default: SqlServer)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-post">POST</span>
+                    <span class="endpoint-path">/aichat/query/preview</span>
+                    <span class="badge badge-auth">🔒 Auth</span>
+                </div>
+                <p class="endpoint-title">Preview Query (Sprint A - Dual Mode)</p>
+                <p>Shows generated SQL without executing it (safe mode)</p>
+
+                <div class="code-block">
+<span class="comment">// Request - same as /query</span>
+{
+  <span class="property">"query"</span>: <span class="string">"Show Ahmed's balance"</span>,
+  <span class="property">"sessionId"</span>: <span class="keyword">null</span>,
+  <span class="property">"connectionString"</span>: <span class="string">"Server=..."</span>
+}
+
+<span class="comment">// Response - returns SQL without execution</span>
+{
+  <span class="property">"success"</span>: <span class="keyword">true</span>,
+  <span class="property">"generatedSql"</span>: <span class="string">"SELECT c.Name, b.Balance FROM..."</span>,
+  <span class="property">"wouldAffectRows"</span>: <span class="number">1</span>,
+  <span class="property">"isSafeToExecute"</span>: <span class="keyword">true</span>,
+  <span class="property">"correlationId"</span>: <span class="string">"..."</span>
+}
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-post">POST</span>
+                    <span class="endpoint-path">/aichat/query/enhanced</span>
+                    <span class="badge badge-auth">🔒 Auth</span>
+                </div>
+                <p class="endpoint-title">Enhanced Query with Persona (Sprint B)</p>
+                <p>Same as /query but with Persona formatting - should always be integrated now</p>
+
+                <div class="info-box">
+                    <h4>💡 Note</h4>
+                    <p>This is a legacy endpoint - Persona enhancement is now integrated into the main /query endpoint via the PersonaEnhancedQueryService decorator.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🏥 Health & System Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-get">GET</span>
+                    <span class="endpoint-path">/health</span>
+                </div>
+                <p class="endpoint-title">System Health Check</p>
+
+                <div class="code-block">
+<span class="comment">// Response 200 OK</span>
+{
+  <span class="property">"status"</span>: <span class="string">"Healthy"</span>,
+  <span class="property">"timestamp"</span>: <span class="string">"2024-01-15T10:30:00Z"</span>,
+  <span class="property">"version"</span>: <span class="string">"2.0.0"</span>,
+  <span class="property">"checks"</span>: {
+    <span class="property">"database"</span>: <span class="string">"Healthy"</span>,
+    <span class="property">"ollama"</span>: <span class="string">"Healthy"</span>,
+    <span class="property">"vectorStore"</span>: <span class="string">"Healthy"</span>
+  }
+}
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-get">GET</span>
+                    <span class="endpoint-path">/health/ai</span>
+                </div>
+                <p class="endpoint-title">AI System Health</p>
+                <p>Checks Ollama connection and model availability</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📊 Status Codes</h2>
+
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Meaning</th>
+                        <th>When?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="status-code status-200">200</span></td>
+                        <td>OK</td>
+                        <td>Query executed successfully</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-400">400</span></td>
+                        <td>Bad Request</td>
+                        <td>Invalid query / ModelState error / AI failed</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-401">401</span></td>
+                        <td>Unauthorized</td>
+                        <td>Missing/Invalid JWT token</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-429">429</span></td>
+                        <td>Too Many Requests</td>
+                        <td>Rate limit exceeded (10 req/min)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>⚡ Rate Limiting</h2>
+
+            <div class="info-box">
+                <h4>⏱️ RagPolicy Limits</h4>
+                <ul style="margin-top: 15px; padding-left: 20px;">
+                    <li><strong>Permit Limit:</strong> 10 requests</li>
+                    <li><strong>Window:</strong> 1 minute</li>
+                    <li><strong>Queue:</strong> 2 requests (oldest first)</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    If exceeded: <span class="status-code status-429">429 Too Many Requests</span>
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>💬 Sample Egyptian Arabic Queries</h2>
+
+            <div class="endpoint-card">
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Query (Egyptian)</th>
+                            <th>English Meaning</th>
+                            <th>Intent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>"هاتلي فلوس أحمد"</code></td>
+                            <td>Show Ahmed's balance</td>
+                            <td>CustomerBalanceInquiry</td>
+                        </tr>
+                        <tr>
+                            <td><code>"جيب حركات النهاردة"</code></td>
+                            <td>Get today's transactions</td>
+                            <td>TransactionList</td>
+                        </tr>
+                        <tr>
+                            <td><code>"أحمد عليه كام"</code></td>
+                            <td>How much does Ahmed owe?</td>
+                            <td>DebtInquiry</td>
+                        </tr>
+                        <tr>
+                            <td><code>"وريني العملاء اللي عليهم فلوس"</code></td>
+                            <td>Show customers with debts</td>
+                            <td>DebtList</td>
+                        </tr>
+                        <tr>
+                            <td><code>"عملي فاتورة لمحمد ب 5000"</code></td>
+                            <td>Create invoice for Mohamed, 5000</td>
+                            <td>CreateInvoice</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🔌 WebSocket (SignalR)</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="http-method method-get">WS</span>
+                    <span class="endpoint-path">/wisc-ai-live-stream-v1</span>
+                    <span class="badge badge-auth">🔒 Auth</span>
+                </div>
+                <p class="endpoint-title">AI Thought Stream</p>
+                <p>Real-time streaming of AI thought process during query execution</p>
+
+                <div class="code-block">
+<span class="comment">// Connect via SignalR client</span>
+<span class="keyword">const</span> connection = <span class="keyword">new</span> signalR.HubConnectionBuilder()
+    .withUrl(<span class="string">"/wisc-ai-live-stream-v1"</span>)
+    .build();
+
+<span class="comment">// Listen for thought stream</span>
+connection.on(<span class="string">"ReceiveThought"</span>, (thought) =&gt; {
+    console.<span class="function">log</span>(thought.step, thought.message);
+});
+
+<span class="comment">// Example messages:</span>
+<span class="comment">// { step: "IntentClassification", message: "Detected: CustomerBalanceInquiry" }</span>
+<span class="comment">// { step: "SqlGeneration", message: "Generating query for customer 'Ahmed'..." }</span>
+<span class="comment">// { step: "Execution", message: "Executing with tenant isolation..." }</span>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>WISC AI Documentation | API Reference (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture Deep Dive</a>
+                <a href="WISC_DECORATORS.html">🎨 Decorator Pattern</a>
+                <a href="WISC_DEVELOPMENT.html">💻 Development Guide</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

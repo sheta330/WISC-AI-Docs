@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISC AI - JSON Contracts & API Schemas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #eaeaea;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(255, 193, 7, 0.2) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #ffc107;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 193, 7, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #eaeaea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section h2 {
+            color: #ffc107;
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: #ffc107;
+            border-radius: 3px;
+        }
+
+        .section h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        .contract-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .contract-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contract-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .contract-title {
+            font-size: 1.4em;
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #8b949e;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .number {
+            color: #79c0ff;
+        }
+
+        .code-block .property {
+            color: #ffa657;
+        }
+
+        .code-block .type {
+            color: #00d4aa;
+        }
+
+        .code-block .required {
+            color: #e94560;
+        }
+
+        .code-block .optional {
+            color: #8b949e;
+        }
+
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .schema-table th {
+            background: rgba(255, 193, 7, 0.3);
+            color: #1a1a2e;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .schema-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .schema-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .badge-required {
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+
+        .badge-optional {
+            background: rgba(139, 148, 158, 0.2);
+            color: #8b949e;
+        }
+
+        .type-box {
+            display: inline-block;
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .example-box {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .example-box h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .nested {
+            margin-left: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            padding-left: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📋 JSON Contracts</h1>
+            <p class="subtitle">
+                API Request/Response Schemas<br>
+                For Angular & Flutter Frontend Integration
+            </p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+            <a href="WISC_INTRO.html" class="nav-link">🗺️ Cognitive Map</a>
+            <a href="WISC_ARCHITECTURE.html" class="nav-link">🏗️ Architecture</a>
+            <a href="WISC_DATABASE.html" class="nav-link">🗄️ Database</a>
+            <a href="WISC_CONTRACTS.html" class="nav-link active">📋 Contracts</a>
+            <a href="WISC_SIGNALR.html" class="nav-link">📡 SignalR</a>
+            <a href="WISC_BUSINESS_RULES.html" class="nav-link">⚖️ Business Rules</a>
+            <a href="WISC_DOCKER.html" class="nav-link">🐳 Docker</a>
+            <a href="WISC_LANDING.html" class="nav-link">🏠 Home</a>
+        </nav>
+
+        <!-- Overview -->
+        <section class="section">
+            <h2>📊 Schema Overview</h2>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">
+                All API responses follow a unified JSON structure. This ensures consistency between 
+                <strong>Angular</strong> web app and <strong>Flutter</strong> mobile app.
+            </p>
+
+            <div class="example-box">
+                <h4>🎯 Design Principles</h4>
+                <ul style="color: #a0a0a0; padding-left: 20px;">
+                    <li><strong>CamelCase</strong> property names for JavaScript/Dart compatibility</li>
+                    <li><strong>ISO 8601</strong> datetime formats (e.g., "2024-01-15T10:30:00Z")</li>
+                    <li><strong>Decimal as string</strong> for financial precision (or IEEE 754 with care)</li>
+                    <li><strong>Always include</strong> correlationId for debugging</li>
+                    <li><strong>Consistent envelope</strong>: { success, data/error, metadata }</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Request Contracts -->
+        <section class="section">
+            <h2>📤 Request Contracts</h2>
+
+            <!-- SmartQueryRequest -->
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">📨</div>
+                    <div class="contract-title">SmartQueryRequest</div>
+                </div>
+                <p style="color: #a0a0a0; margin-bottom: 20px;">
+                    POST /api/v2/UnifiedSmartQuery/query<br>
+                    Main request body for natural language queries
+                </p>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="property">query</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td><span class="badge badge-required">required</span></td>
+                            <td>Natural language query (2-500 chars)</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">sessionId</code></td>
+                            <td><span class="type-box">string (UUID)</span></td>
+                            <td><span class="badge badge-optional">optional</span></td>
+                            <td>Conversation context ID</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">connectionString</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td><span class="badge badge-optional">conditional</span></td>
+                            <td>Required for new sessions</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">databaseType</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td><span class="badge badge-optional">optional</span></td>
+                            <td>"SqlServer" | "PostgreSQL" | "SQLite"</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="code-block">
+<span class="comment">// Example: Simple Balance Query</span>
+{
+  <span class="property">"query"</span>: <span class="string">"Show Ahmed's balance"</span>,
+  <span class="property">"sessionId"</span>: <span class="keyword">null</span>,
+  <span class="property">"connectionString"</span>: <span class="string">"Server=...;Database=...;"</span>,
+  <span class="property">"databaseType"</span>: <span class="string">"SqlServer"</span>
+}
+
+<span class="comment">// Example: Follow-up Query (with session)</span>
+{
+  <span class="property">"query"</span>: <span class="string">"What about yesterday's transactions?"</span>,
+  <span class="property">"sessionId"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>
+}
+                </div>
+            </div>
+
+            <!-- BatchQueryRequest -->
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">📦</div>
+                    <div class="contract-title">BatchQueryRequest</div>
+                </div>
+                <p style="color: #a0a0a0; margin-bottom: 20px;">
+                    POST /api/v2/UnifiedSmartQuery/batch<br>
+                    Execute multiple queries in parallel
+                </p>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="property">queries</code></td>
+                            <td><span class="type-box">string[]</span></td>
+                            <td><span class="badge badge-required">required</span></td>
+                            <td>Array of queries (max 5)</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">sessionId</code></td>
+                            <td><span class="type-box">string (UUID)</span></td>
+                            <td><span class="badge badge-optional">optional</span></td>
+                            <td>Shared context for all queries</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">executeInParallel</code></td>
+                            <td><span class="type-box">boolean</span></td>
+                            <td><span class="badge badge-optional">optional</span></td>
+                            <td>Default: true</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="code-block">
+{
+  <span class="property">"queries"</span>: [
+    <span class="string">"Show Ahmed's balance"</span>,
+    <span class="string">"Get today's transactions"</span>,
+    <span class="string">"List top 5 customers"</span>
+  ],
+  <span class="property">"sessionId"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+  <span class="property">"executeInParallel"</span>: <span class="keyword">true</span>
+}
+                </div>
+            </div>
+        </section>
+
+        <!-- Response Contracts -->
+        <section class="section">
+            <h2>📥 Response Contracts</h2>
+
+            <!-- SmartQueryResponse -->
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">✅</div>
+                    <div class="contract-title">SmartQueryResponse (Success)</div>
+                </div>
+                <p style="color: #a0a0a0; margin-bottom: 20px;">
+                    HTTP 200 OK - Successful query execution
+                </p>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="property">success</code></td>
+                            <td><span class="type-box">boolean</span></td>
+                            <td>Always <span class="type">true</span> for success</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">generatedSql</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>SQL query for transparency</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">data</code></td>
+                            <td><span class="type-box">object[]</span></td>
+                            <td>Query result rows (dynamic schema)</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">rowCount</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>Number of rows returned</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">executionTimeMs</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>Total execution time (milliseconds)</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">intent</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Detected intent (e.g., "CustomerBalanceInquiry")</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">intentConfidence</code></td>
+                            <td><span class="type-box">number (0-1)</span></td>
+                            <td>AI confidence score</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">metadataTokens</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>LLM token usage</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">executionSteps</code></td>
+                            <td><span class="type-box">string[]</span></td>
+                            <td>Processing steps taken</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">correlationId</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Debug trace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">sessionId</code></td>
+                            <td><span class="type-box">string (UUID)</span></td>
+                            <td>Session for follow-up queries</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">message</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Persona-formatted response message</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="code-block">
+<span class="comment">// Example: Balance Inquiry Response</span>
+{
+  <span class="property">"success"</span>: <span class="keyword">true</span>,
+  <span class="property">"generatedSql"</span>: <span class="string">"SELECT Name, Balance FROM Customers WHERE Name LIKE '%Ahmed%'"</span>,
+  <span class="property">"data"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"Ahmed Mohamed"</span>,
+      <span class="property">"balance"</span>: <span class="number">15000.00</span>
+    }
+  ],
+  <span class="property">"rowCount"</span>: <span class="number">1</span>,
+  <span class="property">"executionTimeMs"</span>: <span class="number">245</span>,
+  <span class="property">"intent"</span>: <span class="string">"CustomerBalanceInquiry"</span>,
+  <span class="property">"intentConfidence"</span>: <span class="number">0.95</span>,
+  <span class="property">"metadataTokens"</span>: <span class="number">450</span>,
+  <span class="property">"executionSteps"</span>: [
+    <span class="string">"IntentClassification"</span>,
+    <span class="string">"EntityResolution"</span>,
+    <span class="string">"SqlGeneration"</span>,
+    <span class="string">"Execution"</span>,
+    <span class="string">"Formatting"</span>
+  ],
+  <span class="property">"correlationId"</span>: <span class="string">"a1b2c3d4e5f67890"</span>,
+  <span class="property">"sessionId"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+  <span class="property">"message"</span>: <span class="string">"Hello! 👋 Ahmed Mohamed's balance is 15,000 EGP. Need anything else? 😉"</span>
+}
+                </div>
+            </div>
+
+            <!-- Error Response -->
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">❌</div>
+                    <div class="contract-title">SmartQueryErrorResponse</div>
+                </div>
+                <p style="color: #a0a0a0; margin-bottom: 20px;">
+                    HTTP 400/401/429/500 - Error responses
+                </p>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="property">success</code></td>
+                            <td><span class="type-box">boolean</span></td>
+                            <td>Always <span class="type">false</span> for errors</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">errorCode</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Machine-readable error code</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">errorMessage</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Human-readable error description</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">errorType</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>ValidationError | SecurityError | AIError | SystemError</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">correlationId</code></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>Debug trace ID</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">generatedSql</code></td>
+                            <td><span class="type-box">string | null</span></td>
+                            <td>SQL if generated before error</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">executionSteps</code></td>
+                            <td><span class="type-box">string[]</span></td>
+                            <td>Steps completed before failure</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">details</code></td>
+                            <td><span class="type-box">object</span></td>
+                            <td>Additional error context (optional)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="code-block">
+<span class="comment">// Example: Validation Error</span>
+{
+  <span class="property">"success"</span>: <span class="keyword">false</span>,
+  <span class="property">"errorCode"</span>: <span class="string">"InvalidQuery"</span>,
+  <span class="property">"errorMessage"</span>: <span class="string">"Query could not be understood. Please rephrase."</span>,
+  <span class="property">"errorType"</span>: <span class="string">"ValidationError"</span>,
+  <span class="property">"correlationId"</span>: <span class="string">"a1b2c3d4e5f67890"</span>,
+  <span class="property">"generatedSql"</span>: <span class="keyword">null</span>,
+  <span class="property">"executionSteps"</span>: [<span class="string">"IntentClassification"</span>, <span class="string">"Failed"</span>],
+  <span class="property">"details"</span>: {
+    <span class="property">"intentConfidence"</span>: <span class="number">0.12</span>,
+    <span class="property">"suggestedQueries"</span>: [<span class="string">"Show customer balance"</span>, <span class="string">"Get transactions"</span>]
+  }
+}
+
+<span class="comment">// Example: Security Error</span>
+{
+  <span class="property">"success"</span>: <span class="keyword">false</span>,
+  <span class="property">"errorCode"</span>: <span class="string">"CrossTenantViolation"</span>,
+  <span class="property">"errorMessage"</span>: <span class="string">"Query attempted to access unauthorized tenant data."</span>,
+  <span class="property">"errorType"</span>: <span class="string">"SecurityError"</span>,
+  <span class="property">"correlationId"</span>: <span class="string">"b2c3d4e5f6a78901"</span>
+}
+                </div>
+            </div>
+
+            <!-- Batch Response -->
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">📦</div>
+                    <div class="contract-title">BatchQueryResponse</div>
+                </div>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="property">success</code></td>
+                            <td><span class="type-box">boolean</span></td>
+                            <td>True if ALL queries succeeded</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">results</code></td>
+                            <td><span class="type-box">SmartQueryResponse[]</span></td>
+                            <td>Individual query results</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">totalExecutionTimeMs</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>Total time for all queries</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">completedCount</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>Number of successful queries</td>
+                        </tr>
+                        <tr>
+                            <td><code class="property">failedCount</code></td>
+                            <td><span class="type-box">integer</span></td>
+                            <td>Number of failed queries</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Data Type Reference -->
+        <section class="section">
+            <h2>💰 Financial Data Types</h2>
+
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-icon">💵</div>
+                    <div class="contract-title">Currency & Decimal Handling</div>
+                </div>
+
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>JSON Representation</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Money/Decimal</strong></td>
+                            <td><span class="type-box">number</span> (e.g., 15000.50)</td>
+                            <td>2 decimal places, IEEE 754. Use <code>toFixed(2)</code> in JS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Currency Code</strong></td>
+                            <td><span class="type-box">string</span> (e.g., "EGP")</td>
+                            <td>ISO 4217 standard (EGP, USD, EUR)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exchange Rate</strong></td>
+                            <td><span class="type-box">number</span> (e.g., 30.85)</td>
+                            <td>6 decimal precision for accuracy</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DateTime</strong></td>
+                            <td><span class="type-box">string</span> (ISO 8601)</td>
+                            <td>"2024-01-15T10:30:00Z" (UTC)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date Only</strong></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>"2024-01-15" (without time)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UUID</strong></td>
+                            <td><span class="type-box">string</span></td>
+                            <td>"550e8400-e29b-41d4-a716-446655440000"</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="example-box">
+                    <h4>⚠️ Frontend Handling (Angular/Dart)</h4>
+                    <div class="code-block">
+<span class="comment">// Angular: Currency Pipe</span>
+{{ balance | currency:'EGP':'symbol':'1.2-2' }}  <span class="comment">// EGP 15,000.50</span>
+
+<span class="comment">// Flutter: NumberFormat</span>
+NumberFormat.currency(symbol: 'EGP ', decimalDigits: 2).format(balance);
+
+<span class="comment">// Always handle null/undefined</span>
+balance?.toFixed(2) ?? <span class="string">'0.00'</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Codes -->
+        <section class="section">
+            <h2>🚨 Error Code Reference</h2>
+
+            <div class="contract-card">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Error Code</th>
+                            <th>Type</th>
+                            <th>HTTP Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>InvalidQuery</code></td>
+                            <td>ValidationError</td>
+                            <td>400</td>
+                            <td>Query not understood by AI</td>
+                        </tr>
+                        <tr>
+                            <td><code>EmptyQuery</code></td>
+                            <td>ValidationError</td>
+                            <td>400</td>
+                            <td>Query string is empty/whitespace</td>
+                        </tr>
+                        <tr>
+                            <td><code>QueryTooLong</code></td>
+                            <td>ValidationError</td>
+                            <td>400</td>
+                            <td>Exceeds 500 character limit</td>
+                        </tr>
+                        <tr>
+                            <td><code>InvalidSession</code></td>
+                            <td>ValidationError</td>
+                            <td>400</td>
+                            <td>Session ID not found or expired</td>
+                        </tr>
+                        <tr>
+                            <td><code>Unauthorized</code></td>
+                            <td>SecurityError</td>
+                            <td>401</td>
+                            <td>JWT token missing or invalid</td>
+                        </tr>
+                        <tr>
+                            <td><code>CrossTenantViolation</code></td>
+                            <td>SecurityError</td>
+                            <td>403</td>
+                            <td>Query attempted cross-tenant access</td>
+                        </tr>
+                        <tr>
+                            <td><code>RateLimitExceeded</code></td>
+                            <td>SecurityError</td>
+                            <td>429</td>
+                            <td>Too many requests (10/min limit)</td>
+                        </tr>
+                        <tr>
+                            <td><code>SqlGenerationFailed</code></td>
+                            <td>AIError</td>
+                            <td>500</td>
+                            <td>LLM failed to generate valid SQL</td>
+                        </tr>
+                        <tr>
+                            <td><code>DatabaseError</code></td>
+                            <td>SystemError</td>
+                            <td>500</td>
+                            <td>Database connection/execution failed</td>
+                        </tr>
+                        <tr>
+                            <td><code>OllamaUnavailable</code></td>
+                            <td>SystemError</td>
+                            <td>503</td>
+                            <td>AI service offline</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>WISC AI Documentation | JSON Contracts & API Schemas (Work in Progress)</p>
+            <div class="links">
+                <a href="WISC_INTRO.html">🗺️ Cognitive Map</a>
+                <a href="WISC_ARCHITECTURE.html">🏗️ Architecture</a>
+                <a href="WISC_DATABASE.html">🗄️ Database Schema</a>
+                <a href="WISC_SIGNALR.html">📡 SignalR Stream</a>
+                <a href="WISC_BUSINESS_RULES.html">⚖️ Business Rules</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
