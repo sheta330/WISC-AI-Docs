@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "generatedSql": "SELECT Name, Balance FROM Customers WHERE Name LIKE '%[EntityName]%'",
+  "data": [
+    {"name": "[Customer Name]", "balance": 12345.67}
+  ],
+  "rowCount": 1,
+  "executionTimeMs": 245,
+  "intent": "CustomerBalanceInquiry",
+  "intentConfidence": 0.95,
+  "metadataTokens": 450,
+  "executionSteps": [
+    "IntentClassification",
+    "EntityResolution",
+    "SqlGeneration",
+    "Execution",
+    "Formatting"
+  ],
+  "correlationId": "a1b2c3d4e5f67890",
+  "sessionId": "550e8400-e29b-41d4-a716-446655440000",
+  "message": "Hello! 👋 [Customer Name]'s balance is [Amount] EGP. Need anything else? 😉"
+}

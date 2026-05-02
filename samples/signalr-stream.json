@@ -1,0 +1,9 @@
+{
+  "thoughtStream": [
+    {"step": "IntentClassification", "message": "Detected: CustomerBalanceInquiry"},
+    {"step": "EntityResolution", "message": "Resolving entity: [CustomerName]"},
+    {"step": "SqlGeneration", "message": "Generating query for entity '[CustomerName]'..."},
+    {"step": "SecurityValidation", "message": "Executing with tenant isolation..."},
+    {"step": "Execution", "message": "Query executed successfully"}
+  ]
+}
